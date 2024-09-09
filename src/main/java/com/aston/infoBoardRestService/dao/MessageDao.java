@@ -80,9 +80,9 @@ public class MessageDao {
     private static Message getMessage(ResultSet resultSet) throws SQLException {
         Message message = new Message();
         message.setId(resultSet.getLong("id"));
-        message.setAuthorId(resultSet.getLong("authorId"));
+        message.setAuthorId(resultSet.getLong("author_id"));
         message.setContent(resultSet.getString("content"));
-        message.setAuthorName(resultSet.getString("author"));
+        message.setAuthorName(resultSet.getString("author_name"));
         message.setTimestamp(resultSet.getObject("timestamp", LocalDateTime.class));
         return message;
     }

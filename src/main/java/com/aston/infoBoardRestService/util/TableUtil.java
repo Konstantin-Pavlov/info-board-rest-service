@@ -73,7 +73,7 @@ public class TableUtil {
                         "author_id INTEGER NOT NULL, " +
                         "content VARCHAR(256) NOT NULL, " +
                         "author_name VARCHAR(50) NOT NULL, " +
-                        "timestamp DATE NOT NULL)";
+                        "timestamp TIMESTAMP NOT NULL)";
                 try (Statement statement = connection.createStatement()) {
                     statement.executeUpdate(createTableSQL);
                 }
