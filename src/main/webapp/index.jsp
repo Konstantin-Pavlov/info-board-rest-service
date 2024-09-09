@@ -49,6 +49,6 @@
 <br> <a href="http://localhost:8080/firstJsp.jsp">Visit firstJsp to see current time</a> <br>
 <br> <a href="http://localhost:8080/greeting.jsp?name=guest">Visit greeting page</a> <br>
 <br> <a href="http://localhost:8080/GreetServlet?name=Tom&surname=Hanks">Visit greet servlet page</a> <br>
-<br> <a href="http://localhost:8080/library-servlet">Library servlet using JDBC drivers</a> <br>
+<br> <a href="http://localhost:8080/user-servlet">users list servlet</a> <br>
 </body>
 </html>

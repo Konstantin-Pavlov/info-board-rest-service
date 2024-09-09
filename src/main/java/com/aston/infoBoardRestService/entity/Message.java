@@ -13,6 +13,16 @@ public class Message {
 
     private LocalDateTime timestamp;
 
+    public Message() {
+    }
+
+    public Message(Long authorId, String content, String authorName, LocalDateTime timestamp) {
+        this.authorId = authorId;
+        this.content = content;
+        this.authorName = authorName;
+        this.timestamp = timestamp;
+    }
+
     public Long getId() {
         return id;
     }

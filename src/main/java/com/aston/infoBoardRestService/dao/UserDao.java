@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class UserDao {
@@ -49,4 +51,25 @@ public class UserDao {
         return null;
     }
 
+    public List<User> getAllUsers() throws SQLException {
+        String query = "SELECT * FROM users";
+        List<User> users = new ArrayList<>();
+        try (Connection connection = DbUtil.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                User user = getUser(resultSet);
+                users.add(user);
+            }
+        }
+        return users;
+    }
+
+    private static User getUser(ResultSet resultSet) throws SQLException {
+        User user = new User();
+        user.setId(resultSet.getLong("id"));
+        user.setName(resultSet.getString("username"));
+        user.setEmail(resultSet.getString("email"));
+        return user;
+    }
 }

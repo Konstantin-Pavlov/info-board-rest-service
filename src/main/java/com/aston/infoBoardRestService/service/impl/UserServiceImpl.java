@@ -5,6 +5,7 @@ import com.aston.infoBoardRestService.mapper.UserMapper;
 import com.aston.infoBoardRestService.service.UserService;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import com.aston.infoBoardRestService.dao.UserDao;
 
@@ -19,5 +20,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserByEmail(String email) throws SQLException {
         return userMapper.toUserDTO(userDao.getUserByEmail(email));
+    }
+
+    @Override
+    public List<UserDto> getAllUsers() throws SQLException {
+        return userDao.getAllUsers()
+                .stream()
+                .map(userMapper::toUserDTO)
+                .toList();
     }
 }

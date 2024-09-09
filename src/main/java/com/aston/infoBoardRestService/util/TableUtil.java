@@ -1,19 +1,22 @@
 package com.aston.infoBoardRestService.util;
 
+import com.aston.infoBoardRestService.dao.MessageDao;
 import com.aston.infoBoardRestService.dao.UserDao;
+import com.aston.infoBoardRestService.entity.Message;
 import com.aston.infoBoardRestService.entity.User;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
 public class TableUtil {
     private static final Logger logger = Logger.getLogger(TableUtil.class.getName());
     private static final UserDao userDao = new UserDao();
+    private static final MessageDao messageDao = new MessageDao();
 
     private TableUtil() {
     }
@@ -86,7 +89,7 @@ public class TableUtil {
 
     public static String insertSampleUsers() {
         try {
-            userDao.saveUser(new User( "Bob", "bob@email.com"));
+            userDao.saveUser(new User("Bob", "bob@email.com"));
             userDao.saveUser(new User("Dave", "dave@email.com"));
             userDao.saveUser(new User("Rob", "rob@email.com"));
             userDao.saveUser(new User("Rob", "rob@email.com"));
@@ -98,42 +101,17 @@ public class TableUtil {
         }
     }
 
+    // java.sql.Date.valueOf(java.time.LocalDate.now()
     public static String insertSampleMessages() {
-        String insertSQL = "INSERT INTO messages (author_id, content, author_name, timestamp) VALUES (?, ?, ?, ?)";
-        try (Connection connection = DbUtil.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
-
-            connection.setAutoCommit(false);
-
-            // Add realistic message data
-            preparedStatement.setInt(1, 1);
-            preparedStatement.setString(2, "Hello, this is John Doe. How are you?");
-            preparedStatement.setString(3, "john_doe");
-            preparedStatement.setDate(4, java.sql.Date.valueOf(java.time.LocalDate.now()));
-            preparedStatement.addBatch();
-
-            preparedStatement.setInt(1, 2);
-            preparedStatement.setString(2, "Hi, this is Jane Smith. Nice to meet you!");
-            preparedStatement.setString(3, "jane_smith");
-            preparedStatement.setDate(4, java.sql.Date.valueOf(java.time.LocalDate.now()));
-            preparedStatement.addBatch();
-
-            preparedStatement.setInt(1, 3);
-            preparedStatement.setString(2, "Hey, this is Alice Jones. Let's catch up soon.");
-            preparedStatement.setString(3, "alice_jones");
-            preparedStatement.setDate(4, java.sql.Date.valueOf(java.time.LocalDate.now()));
-            preparedStatement.addBatch();
-
-            preparedStatement.executeBatch();
-            connection.commit();
-
+        try {
+            messageDao.saveMessage(new Message(5L, "whats up", "Bob", LocalDateTime.now()));
+            messageDao.saveMessage(new Message(10L, "whats good", "Rob", LocalDateTime.now()));
             return "Sample messages inserted successfully.";
         } catch (SQLException e) {
             logger.severe(e.getMessage());
             e.printStackTrace();
             return "Failed to insert sample messages.";
         }
+
     }
-
-
 }
