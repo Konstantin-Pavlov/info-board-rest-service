@@ -6,5 +6,5 @@ import java.sql.SQLException;
 
 public interface UserService {
     void saveUser(UserDto user) throws SQLException;
-    UserDto getUser(String name) throws SQLException;
+    UserDto getUserByEmail(String name) throws SQLException;
 }

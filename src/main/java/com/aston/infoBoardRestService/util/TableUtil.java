@@ -1,5 +1,8 @@
 package com.aston.infoBoardRestService.util;
 
+import com.aston.infoBoardRestService.dao.UserDao;
+import com.aston.infoBoardRestService.entity.User;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -10,6 +13,7 @@ import java.util.logging.Logger;
 
 public class TableUtil {
     private static final Logger logger = Logger.getLogger(TableUtil.class.getName());
+    private static final UserDao userDao = new UserDao();
 
     private TableUtil() {
     }
@@ -75,39 +79,22 @@ public class TableUtil {
         } catch (SQLException e) {
             logger.severe(e.getMessage());
             e.printStackTrace();
-            return "<p>database failed to load</p>";
+            return "database failed to load";
         }
     }
 
 
     public static String insertSampleUsers() {
-        String insertSQL = "INSERT INTO users (username, email) VALUES (?, ?)";
-        try (Connection connection = DbUtil.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
-
-            connection.setAutoCommit(false);
-
-            // Add realistic user data
-            preparedStatement.setString(1, "john doe");
-            preparedStatement.setString(2, "john.doe@example.com");
-            preparedStatement.addBatch();
-
-            preparedStatement.setString(1, "jane smith");
-            preparedStatement.setString(2, "jane.smith@example.com");
-            preparedStatement.addBatch();
-
-            preparedStatement.setString(1, "alice jones");
-            preparedStatement.setString(2, "alice.jones@example.com");
-            preparedStatement.addBatch();
-
-            preparedStatement.executeBatch();
-            connection.commit();
-
+        try {
+            userDao.saveUser(new User( "Bob", "bob@email.com"));
+            userDao.saveUser(new User("Dave", "dave@email.com"));
+            userDao.saveUser(new User("Rob", "rob@email.com"));
+            userDao.saveUser(new User("Rob", "rob@email.com"));
+            userDao.saveUser(new User("alice jones", "alice.jones@example.com"));
             return "Sample users inserted successfully.";
         } catch (SQLException e) {
             logger.severe(e.getMessage());
-            e.printStackTrace();
-            return "Failed to insert sample users.";
+            return "failed to insert users.";
         }
     }
 

@@ -16,7 +16,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void saveMessage(MessageDto messageDTO) throws SQLException {
-        Message message = messageMapper.toEntity(messageDTO);
+        Message message = messageMapper.toMessage(messageDTO);
         messageDao.saveMessage(message);
     }
 
@@ -24,7 +24,7 @@ public class MessageServiceImpl implements MessageService {
     public MessageDto getMessage(Long id) throws SQLException {
         Message message = messageDao.getMessage(id);
         if (message != null) {
-            return messageMapper.toDTO(message);
+            return messageMapper.toMessageDto(message);
         }
         return null;
     }
@@ -32,12 +32,12 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public List<MessageDto> getAllMessages() throws SQLException {
         List<Message> messages = messageDao.getAllMessages();
-        return messageMapper.toDTOList(messages);
+        return messageMapper.toMessageDtoList(messages);
     }
 
     @Override
     public void updateMessage(MessageDto messageDTO) throws SQLException {
-        Message message = messageMapper.toEntity(messageDTO);
+        Message message = messageMapper.toMessage(messageDTO);
         messageDao.updateMessage(message);
     }
 

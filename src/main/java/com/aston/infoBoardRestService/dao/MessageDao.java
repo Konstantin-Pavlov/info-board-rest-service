@@ -10,17 +10,22 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class MessageDao {
+    Logger logger = Logger.getLogger(UserDao.class.getName());
+
 
     public void saveMessage(Message message) throws SQLException {
-        String query = "INSERT INTO messages (content, author_id, timestamp) VALUES (?, ?, ?)";
+        String query = "INSERT INTO messages (author_id, content, author_name, timestamp) VALUES (?, ?, ?, ?)";
         try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, message.getContent());
-            statement.setString(2, message.getAuthorName());
-            statement.setObject(3, message.getTimestamp());
+            statement.setLong(1, message.getAuthorId());
+            statement.setString(2, message.getContent());
+            statement.setString(3, message.getAuthorName());
+            statement.setObject(4, message.getTimestamp());
             statement.executeUpdate();
+            logger.info("Message with author name " + message.getAuthorName() + " has been saved");
         }
     }
 
@@ -31,13 +36,7 @@ public class MessageDao {
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                Message message = new Message();
-                message.setId(resultSet.getLong("id"));
-                message.setAuthorId(resultSet.getLong("authorId"));
-                message.setContent(resultSet.getString("content"));
-                message.setAuthorName(resultSet.getString("author"));
-                message.setTimestamp(resultSet.getObject("timestamp", LocalDateTime.class));
-                return message;
+                return getMessage(resultSet);
             }
         }
         return null;
@@ -50,12 +49,7 @@ public class MessageDao {
              PreparedStatement statement = connection.prepareStatement(query);
              ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
-                Message message = new Message();
-                message.setId(resultSet.getLong("id"));
-                message.setAuthorId(resultSet.getLong("authorId"));
-                message.setContent(resultSet.getString("content"));
-                message.setAuthorName(resultSet.getString("author"));
-                message.setTimestamp(resultSet.getObject("timestamp", LocalDateTime.class));
+                Message message = getMessage(resultSet);
                 messages.add(message);
             }
         }
@@ -81,5 +75,15 @@ public class MessageDao {
             statement.setLong(1, id);
             statement.executeUpdate();
         }
+    }
+
+    private static Message getMessage(ResultSet resultSet) throws SQLException {
+        Message message = new Message();
+        message.setId(resultSet.getLong("id"));
+        message.setAuthorId(resultSet.getLong("authorId"));
+        message.setContent(resultSet.getString("content"));
+        message.setAuthorName(resultSet.getString("author"));
+        message.setTimestamp(resultSet.getObject("timestamp", LocalDateTime.class));
+        return message;
     }
 }
