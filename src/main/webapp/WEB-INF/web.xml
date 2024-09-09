@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+
+    <display-name>InfoBoardRestService</display-name>
+
+
+    <servlet>
+        <servlet-name>javax.ws.rs.core.Application</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>com.aston.infoBoardRestService</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>javax.ws.rs.core.Application</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>FirstServlet</servlet-name>
+        <servlet-class>com.aston.infoBoardRestService.FirstServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FirstServlet</servlet-name>
+        <url-pattern>/hello-servlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>greet</servlet-name>
+        <jsp-file>/greet.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>greet</servlet-name>
+        <url-pattern>/greeting.jsp</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+
+

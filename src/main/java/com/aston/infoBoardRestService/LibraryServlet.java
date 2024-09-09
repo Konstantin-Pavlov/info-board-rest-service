@@ -1,5 +1,7 @@
 package com.aston.infoBoardRestService;
 
+import com.aston.infoBoardRestService.util.DbUtil;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -16,7 +18,7 @@ import java.sql.Statement;
 @WebServlet(name = "library servlet", value = "/library-servlet")
 public class LibraryServlet extends HttpServlet {
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         PrintWriter out = resp.getWriter();
 
         out.println("<html>");
@@ -29,31 +31,27 @@ public class LibraryServlet extends HttpServlet {
             e.printStackTrace();
         }
 // jdbc:postgresql://localhost:5432/postgres
-        try {
-            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "123");
+        try (Connection connection = DbUtil.getConnection()) {
             out.println("<p>database loaded</p>");
 
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("select id, author_id, year, name from library.book");
-            out.println("<table>");
-            out.println("<tr><th>ID</th><th>Author ID</th><th>Year</th><th>Name</th></tr>");
 
-            while (resultSet.next()) {
-                String id = resultSet.getString("id");
-                String author_id = resultSet.getString("author_id");
-                String year = resultSet.getString("year");
-                String name = resultSet.getString("name");
+            // Create users table if it doesn't exist
+            String createTableSQL = "CREATE TABLE IF NOT EXISTS users (" +
+                    "id SERIAL PRIMARY KEY, " +
+                    "username VARCHAR(100) NOT NULL, " +
+                    "email VARCHAR(100) NOT NULL)";
+            statement.executeUpdate(createTableSQL);
 
-                out.println("<tr>");
-                out.println("<td>" + id + "</td>");
-                out.println("<td>" + author_id + "</td>");
-                out.println("<td>" + year + "</td>");
-                out.println("<td>" + name + "</td>");
-                out.println("</tr>");
-            }
 
-            out.println("</table>");
-            statement.close();
+            out.println("<p>database created</p>");
+            // Insert 2-3 records into users table
+//            String insertRecordsSQL = "INSERT INTO users (username, email) VALUES " +
+//                    "('user1', 'user1@example.com'), " +
+//                    "('user2', 'user2@example.com'), " +
+//                    "('user3', 'user3@example.com')";
+//            statement.executeUpdate(insertRecordsSQL);
+
         } catch (SQLException e) {
             out.println("<p>database failed to load</p>");
             e.printStackTrace();
@@ -61,41 +59,6 @@ public class LibraryServlet extends HttpServlet {
 
         out.println("<br>");
         out.println("<br>");
-
-        try {
-            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "123");
-            Statement statement = connection.createStatement();
-            // Execute the SQL query and retrieve the results
-            ResultSet resultSet = statement.executeQuery(
-                    "SELECT author.name, author.surname, book.name, book.year " +
-                            "FROM library.author " +
-                            "JOIN library.book ON book.author_id = author.id " +
-                            "ORDER BY author.name"
-            );
-            out.println("<p>database loaded</p>");
-            out.println("<table style='border-collapse: separate; border-spacing: 0 10px;'>");
-            out.println("<tr><th>Author Name</th><th>Author Surname</th><th>Book Name</th><th>Year</th></tr>");
-
-            // Iterate over the result set and populate the table rows
-            while (resultSet.next()) {
-                String authorName = resultSet.getString("name");
-                String authorSurname = resultSet.getString("surname");
-                String bookName = resultSet.getString("name");
-                String year = resultSet.getString("year");
-
-                out.println("<tr>");
-                out.println("<td>" + authorName + "</td>");
-                out.println("<td>" + authorSurname + "</td>");
-                out.println("<td>" + bookName + "</td>");
-                out.println("<td>" + year + "</td>");
-                out.println("</tr>");
-            }
-
-            out.println("</table>");
-        } catch (SQLException e) {
-            out.println("<p>database failed to load</p>");
-            e.printStackTrace();
-        }
 
         out.println("<br>  <a href=\"http://localhost:8080/\"\">homepage</a> <br>\n");
         out.println("</html>");
