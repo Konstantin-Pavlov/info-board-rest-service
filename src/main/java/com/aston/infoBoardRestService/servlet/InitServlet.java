@@ -22,7 +22,7 @@ public class InitServlet extends HttpServlet {
         String insertUsers = "users not inserted";
         String insertMessages = "messages not inserted";
 
-        try (Connection connection = DbUtil.getConnection()) {
+        try (Connection connection = DbUtil.getInstance().getConnection()) {
             createUsersTableMessage = TableUtil.createUsersTableIfNotExists();
             createMessagesTableMessage = TableUtil.createMessagesTableIfNotExists();
 

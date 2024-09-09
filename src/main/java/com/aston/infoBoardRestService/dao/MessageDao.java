@@ -14,8 +14,8 @@ import java.util.List;
 public class MessageDao {
 
     public void saveMessage(Message message) throws SQLException {
-        String query = "INSERT INTO messages (content, author, timestamp) VALUES (?, ?, ?)";
-        try (Connection connection = DbUtil.getConnection();
+        String query = "INSERT INTO messages (content, author_id, timestamp) VALUES (?, ?, ?)";
+        try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, message.getContent());
             statement.setString(2, message.getAuthorName());
@@ -26,7 +26,7 @@ public class MessageDao {
 
     public Message getMessage(Long id) throws SQLException {
         String query = "SELECT * FROM messages WHERE id = ?";
-        try (Connection connection = DbUtil.getConnection();
+        try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
@@ -46,7 +46,7 @@ public class MessageDao {
     public List<Message> getAllMessages() throws SQLException {
         String query = "SELECT * FROM messages";
         List<Message> messages = new ArrayList<>();
-        try (Connection connection = DbUtil.getConnection();
+        try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query);
              ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
@@ -63,8 +63,8 @@ public class MessageDao {
     }
 
     public void updateMessage(Message message) throws SQLException {
-        String query = "UPDATE messages SET content = ?, author = ?, timestamp = ? WHERE id = ?";
-        try (Connection connection = DbUtil.getConnection();
+        String query = "UPDATE messages SET content = ?, author_id = ?, timestamp = ? WHERE id = ?";
+        try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, message.getContent());
             statement.setString(2, message.getContent());
@@ -76,7 +76,7 @@ public class MessageDao {
 
     public void deleteMessage(Long id) throws SQLException {
         String query = "DELETE FROM messages WHERE id = ?";
-        try (Connection connection = DbUtil.getConnection();
+        try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, id);
             statement.executeUpdate();

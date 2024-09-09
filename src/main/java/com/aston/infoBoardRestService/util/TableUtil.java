@@ -26,7 +26,7 @@ public class TableUtil {
     }
 
     public static String createUsersTableIfNotExists() {
-        try (Connection connection = DbUtil.getConnection()) {
+        try (Connection connection = DbUtil.getInstance().getConnection()) {
             DatabaseMetaData dbMetaData = connection.getMetaData();
             ResultSet tables = dbMetaData.getTables(null, null, "users", new String[]{"TABLE"});
 
@@ -52,7 +52,7 @@ public class TableUtil {
     }
 
     public static String createMessagesTableIfNotExists() {
-        try (Connection connection = DbUtil.getConnection()) {
+        try (Connection connection = DbUtil.getInstance().getConnection()) {
             DatabaseMetaData dbMetaData = connection.getMetaData();
             ResultSet tables = dbMetaData.getTables(null, null, "messages", new String[]{"TABLE"});
 
@@ -82,7 +82,7 @@ public class TableUtil {
 
     public static String insertSampleUsers() {
         String insertSQL = "INSERT INTO users (username, email) VALUES (?, ?)";
-        try (Connection connection = DbUtil.getConnection();
+        try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
 
             connection.setAutoCommit(false);
@@ -113,7 +113,7 @@ public class TableUtil {
 
     public static String insertSampleMessages() {
         String insertSQL = "INSERT INTO messages (author_id, content, author_name, timestamp) VALUES (?, ?, ?, ?)";
-        try (Connection connection = DbUtil.getConnection();
+        try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
 
             connection.setAutoCommit(false);

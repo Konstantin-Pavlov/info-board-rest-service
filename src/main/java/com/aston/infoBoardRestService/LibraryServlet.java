@@ -31,7 +31,7 @@ public class LibraryServlet extends HttpServlet {
             e.printStackTrace();
         }
 // jdbc:postgresql://localhost:5432/postgres
-        try (Connection connection = DbUtil.getConnection()) {
+        try (Connection connection = DbUtil.getInstance().getConnection()) {
             out.println("<p>database loaded</p>");
 
             Statement statement = connection.createStatement();

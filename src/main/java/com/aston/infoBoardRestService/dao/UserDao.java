@@ -11,8 +11,8 @@ import java.sql.SQLException;
 public class UserDao {
 
     public void saveUser(UserDto user) throws SQLException {
-        String query = "INSERT INTO users (name, surname) VALUES (?, ?)";
-        try (Connection connection = DbUtil.getConnection();
+        String query = "INSERT INTO users (username, email) VALUES (?, ?)";
+        try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, user.getName());
             statement.setString(2, user.getEmail());
@@ -22,8 +22,8 @@ public class UserDao {
 
 
     public UserDto getUser(String name) throws SQLException {
-        String query = "SELECT * FROM users WHERE name = ?";
-        try (Connection connection = DbUtil.getConnection();
+        String query = "SELECT * FROM users WHERE username = ?";
+        try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, name);
             ResultSet resultSet = statement.executeQuery();
