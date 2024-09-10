@@ -22,5 +22,4 @@ public class MessageSaver {
             logger.info(String.format("Message %s saved for user %s", message.getContent(), user.getName()));
         }
     }
-
 }

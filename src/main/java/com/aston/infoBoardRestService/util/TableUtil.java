@@ -2,7 +2,6 @@ package com.aston.infoBoardRestService.util;
 
 import com.aston.infoBoardRestService.dao.MessageDao;
 import com.aston.infoBoardRestService.dao.UserDao;
-import com.aston.infoBoardRestService.entity.Message;
 import com.aston.infoBoardRestService.entity.User;
 
 import java.sql.Connection;
@@ -10,7 +9,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
 public class TableUtil {

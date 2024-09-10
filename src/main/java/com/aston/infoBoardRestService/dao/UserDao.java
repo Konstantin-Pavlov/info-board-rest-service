@@ -27,9 +27,7 @@ public class UserDao {
         } else {
             logger.warning("User with email " + user.getEmail() + " already exists");
         }
-
     }
-
 
     public User getUserByEmail(String email) throws SQLException {
         String query = "SELECT * FROM users WHERE email = ?";
