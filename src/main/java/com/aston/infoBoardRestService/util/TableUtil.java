@@ -17,6 +17,7 @@ public class TableUtil {
     private static final Logger logger = Logger.getLogger(TableUtil.class.getName());
     private static final UserDao userDao = new UserDao();
     private static final MessageDao messageDao = new MessageDao();
+    private static final User USER = UserGenerator.generateUser();
 
     private TableUtil() {
     }
@@ -89,12 +90,8 @@ public class TableUtil {
 
     public static String insertSampleUsers() {
         try {
-            userDao.saveUser(new User("Bob", "bob@email.com"));
-            userDao.saveUser(new User("Dave", "dave@email.com"));
-            userDao.saveUser(new User("Rob", "rob@email.com"));
-            userDao.saveUser(new User("Rob", "rob@email.com"));
-            userDao.saveUser(new User("alice jones", "alice.jones@example.com"));
-            return "Sample users inserted successfully.";
+            userDao.saveUser(USER);
+            return "Sample user inserted successfully.";
         } catch (SQLException e) {
             logger.severe(e.getMessage());
             return "failed to insert users.";
@@ -104,8 +101,8 @@ public class TableUtil {
     // java.sql.Date.valueOf(java.time.LocalDate.now()
     public static String insertSampleMessages() {
         try {
-            messageDao.saveMessage(new Message(5L, "whats up", "jane smith", LocalDateTime.now()));
-            messageDao.saveMessage(new Message(10L, "whats good", "Bob", LocalDateTime.now()));
+            User user = userDao.getUserByEmail(USER.getEmail());
+            messageDao.saveMessage(MessageGenerator.generateMessage(user.getId(), user.getName()));
             return "Sample messages inserted successfully.";
         } catch (SQLException e) {
             logger.severe(e.getMessage());

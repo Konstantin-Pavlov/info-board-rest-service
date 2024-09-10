@@ -52,5 +52,6 @@
 <br> <a href="http://localhost:8080/user-servlet">users list servlet</a> <br>
 <br> <a href="http://localhost:8080/api/messages">messages list servlet</a> <br>
 <br> <a href="http://localhost:8080/api/message-board">message board</a> <br>
+<br> <a href="http://localhost:8080/generator">generator</a> <br>
 </body>
 </html>
