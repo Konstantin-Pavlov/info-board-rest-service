@@ -6,7 +6,11 @@ public class UserMessagesDto {
     private UserDto user;
     private List<MessageDto> messages;
 
-    // Getters and Setters
+    public UserMessagesDto(UserDto user, List<MessageDto> messages) {
+        this.user = user;
+        this.messages = messages;
+    }
+
     public UserDto getUser() {
         return user;
     }

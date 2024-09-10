@@ -104,8 +104,8 @@ public class TableUtil {
     // java.sql.Date.valueOf(java.time.LocalDate.now()
     public static String insertSampleMessages() {
         try {
-            messageDao.saveMessage(new Message(5L, "whats up", "Bob", LocalDateTime.now()));
-            messageDao.saveMessage(new Message(10L, "whats good", "Rob", LocalDateTime.now()));
+            messageDao.saveMessage(new Message(5L, "whats up", "jane smith", LocalDateTime.now()));
+            messageDao.saveMessage(new Message(10L, "whats good", "Bob", LocalDateTime.now()));
             return "Sample messages inserted successfully.";
         } catch (SQLException e) {
             logger.severe(e.getMessage());

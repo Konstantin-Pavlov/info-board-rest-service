@@ -42,6 +42,22 @@ public class MessageDao {
         return null;
     }
 
+    public List<Message> getMessagesByAuthorId(Long authorId) throws SQLException {
+        String query = "SELECT * FROM messages WHERE author_id = ?";
+        List<Message> messages = new ArrayList<>();
+        try (Connection connection = DbUtil.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setLong(1, authorId);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Message message = getMessage(resultSet);
+                messages.add(message);
+            }
+        }
+        return messages;
+    }
+
+
     public List<Message> getAllMessages() throws SQLException {
         String query = "SELECT * FROM messages";
         List<Message> messages = new ArrayList<>();

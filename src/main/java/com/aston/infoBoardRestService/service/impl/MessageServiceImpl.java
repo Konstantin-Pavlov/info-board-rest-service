@@ -36,6 +36,12 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    public List<MessageDto> getMessagesByAuthorId(Long authorId) throws SQLException {
+        List<Message> messagesByAuthorId = messageDao.getMessagesByAuthorId(authorId);
+        return messageMapper.toMessageDtoList(messagesByAuthorId);
+    }
+
+    @Override
     public void updateMessage(MessageDto messageDTO) throws SQLException {
         Message message = messageMapper.toMessage(messageDTO);
         messageDao.updateMessage(message);
