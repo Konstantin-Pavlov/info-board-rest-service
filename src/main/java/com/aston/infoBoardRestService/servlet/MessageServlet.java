@@ -1,8 +1,10 @@
 package com.aston.infoBoardRestService.servlet;
 
 import com.aston.infoBoardRestService.dto.MessageDto;
+import com.aston.infoBoardRestService.dto.UserDto;
 import com.aston.infoBoardRestService.service.MessageService;
 import com.aston.infoBoardRestService.service.impl.MessageServiceImpl;
+import com.aston.infoBoardRestService.util.DateTimeUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,124 +17,51 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@WebServlet("/api/messages/*")
+@WebServlet(name = "message servlet", value = "/api/messages")
 public class MessageServlet extends HttpServlet {
 
     private final MessageService messageService = new MessageServiceImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String pathInfo = req.getPathInfo();
-        if (pathInfo == null || pathInfo.equals("/")) {
-            List<MessageDto> messageDtos = null;
-            try {
-                messageDtos = messageService.getAllMessages();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            resp.setContentType("application/json");
-            PrintWriter out = resp.getWriter();
-            out.print(messageDtos);
-            out.flush();
-        } else {
-            String[] splits = pathInfo.split("/");
-            if (splits.length == 2) {
-                Long id = Long.parseLong(splits[1]);
-                MessageDto messageDTO = null;
-                try {
-                    messageDTO = messageService.getMessage(id);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                if (messageDTO != null) {
-                    resp.setContentType("application/json");
-                    PrintWriter out = resp.getWriter();
-                    out.print(messageDTO);
-                    out.flush();
-                } else {
-                    resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-                }
-            } else {
-                resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            }
-        }
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        MessageDto messageDTO = new MessageDto();
-        messageDTO.setAuthorId(Long.parseLong(req.getParameter("authorId")));
-        messageDTO.setContent(req.getParameter("content"));
-        messageDTO.setAuthorName(req.getParameter("authorName"));
-        messageDTO.setTimestamp(LocalDateTime.now());
-
-        try {
-            messageService.saveMessage(messageDTO);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
-        out.print(messageDTO);
-        out.flush();
-    }
 
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String pathInfo = req.getPathInfo();
-        if (pathInfo == null || pathInfo.equals("/")) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
-
-        String[] splits = pathInfo.split("/");
-        if (splits.length != 2) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
-
-        Long id = Long.parseLong(splits[1]);
-        MessageDto messageDTO = new MessageDto();
-        messageDTO.setId(id);
-        messageDTO.setAuthorId(Long.parseLong(req.getParameter("authorId")));
-        messageDTO.setContent(req.getParameter("content"));
-        messageDTO.setAuthorName(req.getParameter("authorName"));
-        messageDTO.setTimestamp(LocalDateTime.now());
+        out.println("<html>");
+        out.println("<head>");
+        out.println("<title>Message List servlet</title>");
+        out.println("<style>");
+        out.println("body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }");
+        out.println("h1 { color: #333; }");
+        out.println("ul { list-style-type: none; padding: 0; }");
+        out.println("li { background: #fff; margin: 10px 0; padding: 15px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }");
+        out.println("strong { color: #007BFF; }");
+        out.println(".timestamp { font-size: 0.9em; color: #888; }");
+        out.println("</style>");
+        out.println("</head>");
+        out.println("<body>");
+        out.println("<h1>Message List servlet</h1>");
 
         try {
-            messageService.updateMessage(messageDTO);
+            List<MessageDto> messages = messageService.getAllMessages();
+            out.println("<ul>");
+            for (MessageDto messageDto : messages) {
+                out.println("<li>");
+                out.println("<strong>Message ID:</strong> " + messageDto.getId() + "<br>");
+                out.println("<strong>Author ID:</strong> " + messageDto.getAuthorId() + "<br>");
+                out.println("<strong>Content:</strong> " + messageDto.getContent() + "<br>");
+                out.println("<strong>Author Name:</strong> " + messageDto.getAuthorName() + "<br>");
+                out.println("<span class='timestamp'>" + DateTimeUtil.getFormattedDate(messageDto.getTimestamp()) + "</span>");
+                out.println("</li>");
+            }
+            out.println("</ul>");
         } catch (SQLException e) {
-            e.printStackTrace();
+            out.println("<p>Error retrieving messages: " + e.getMessage() + "</p>");
         }
 
-        resp.setContentType("application/json");
-        PrintWriter out = resp.getWriter();
-        out.print(messageDTO);
-        out.flush();
+        out.println("<br>");
+
+        out.println("<br>  <a href=\"http://localhost:8080/\"\">homepage</a> <br>\n");
+        out.println("</html>");
     }
 
-    @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String pathInfo = req.getPathInfo();
-        if (pathInfo == null || pathInfo.equals("/")) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
-
-        String[] splits = pathInfo.split("/");
-        if (splits.length != 2) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
-
-        Long id = Long.parseLong(splits[1]);
-        try {
-            messageService.deleteMessage(id);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
-    }
 }

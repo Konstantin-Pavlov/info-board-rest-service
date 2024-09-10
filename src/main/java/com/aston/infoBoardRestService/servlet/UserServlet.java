@@ -1,4 +1,4 @@
-package com.aston.infoBoardRestService;
+package com.aston.infoBoardRestService.servlet;
 
 import com.aston.infoBoardRestService.dto.UserDto;
 import com.aston.infoBoardRestService.service.UserService;
@@ -16,6 +16,7 @@ import java.util.List;
 @WebServlet(name = "user servlet", value = "/user-servlet")
 public class UserServlet extends HttpServlet {
     private final UserService userService = new UserServiceImpl();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         PrintWriter out = resp.getWriter();

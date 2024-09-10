@@ -22,7 +22,7 @@ public class UserDao {
                 statement.setString(1, user.getName());
                 statement.setString(2, user.getEmail());
                 statement.executeUpdate();
-                logger.info("User with email" + user.getEmail() + " has been saved");
+                logger.info("User with email " + user.getEmail() + " has been saved");
             }
         } else {
             logger.warning("User with email " + user.getEmail() + " already exists");

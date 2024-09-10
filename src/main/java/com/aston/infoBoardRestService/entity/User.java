@@ -1,5 +1,8 @@
 package com.aston.infoBoardRestService.entity;
 
+import org.mapstruct.Builder;
+
+
 public class User {
     private Long id;
     private String name;
