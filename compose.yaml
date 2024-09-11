@@ -32,7 +32,7 @@ services:
 
   postgres:
     container_name: info_board_postgres
-    image: gh0stlyn0mad/info-board-postgres
+    image: gh0stlyn0mad/info-board-postgres:latest
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
