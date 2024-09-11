@@ -38,7 +38,7 @@
     if (needsRedirect) {
 %>
 <script type="text/javascript">
-    setTimeout(redirectToInit, 1000); // Redirect after 2 seconds
+    setTimeout(redirectToInit, 1000); // Redirect after 1 second
 </script>
 <%
     }
