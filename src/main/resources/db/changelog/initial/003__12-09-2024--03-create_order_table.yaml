@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: create table for orders
+      author: K
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: orders
+              schemaName: public
+      changes:
+        - createTable:
+            tableName: orders
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false

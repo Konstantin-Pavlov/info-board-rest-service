@@ -1,5 +1,17 @@
 databaseChangeLog:
+
+  #creates
   - include:
       file: db/changelog/initial/001__08-09-2024--01-create_user_table.yaml
   - include:
       file: db/changelog/initial/002__08-09-2024--02-create_message_table.yaml
+  - include:
+      file: db/changelog/initial/003__12-09-2024--03-create_order_table.yaml
+
+  #inserts
+  - include:
+      file: db/changelog/initial/data/001__12-09-2024--04-insert_order_table.sql
+  - include:
+      file: db/changelog/initial/data/001__12-09-2024--01-insert_users_table.sql
+  - include:
+      file: db/changelog/initial/data/001__12-09-2024--01-insert_messages_table.sql
