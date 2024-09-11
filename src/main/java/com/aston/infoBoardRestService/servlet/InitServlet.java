@@ -17,23 +17,23 @@ public class InitServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String createUsersTableMessage = "";
-        String createMessagesTableMessage = "";
+        String createUsersTableMessage = "users not created";
+        String createMessagesTableMessage = "messages not created";
         String insertUsers = "users not inserted";
         String insertMessages = "messages not inserted";
 
         try (Connection connection = DbUtil.getInstance().getConnection()) {
-            createUsersTableMessage = TableUtil.createUsersTableIfNotExists();
-            createMessagesTableMessage = TableUtil.createMessagesTableIfNotExists();
+//            createUsersTableMessage = TableUtil.createUsersTableIfNotExists();
+//            createMessagesTableMessage = TableUtil.createMessagesTableIfNotExists();
 
             if (createUsersTableMessage.contains("created successfully")
                             || createMessagesTableMessage.contains("already exists")) {
-                insertUsers = TableUtil.insertSampleUsers();
+//                insertUsers = TableUtil.insertSampleUsers();
             }
 
             if (createUsersTableMessage.contains("created successfully")
                             || createMessagesTableMessage.contains("already exists")) {
-                insertMessages = TableUtil.insertSampleMessages();
+//                insertMessages = TableUtil.insertSampleMessages();
             }
         } catch (SQLException e) {
             createUsersTableMessage = "Error creating users table: " + e.getMessage();

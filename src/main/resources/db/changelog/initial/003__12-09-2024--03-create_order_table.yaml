@@ -1,16 +1,16 @@
 databaseChangeLog:
   - changeSet:
-      id: create table for users
+      id: create table for orders
       author: K
       preConditions:
         - onFail: MARK_RAN
           not:
             tableExists:
-              tableName: users
+              tableName: orders
               schemaName: public
       changes:
         - createTable:
-            tableName: users
+            tableName: orders
             columns:
               - column:
                   name: id
@@ -20,13 +20,7 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: username
+                  name: title
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
-              - column:
-                  name: email
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-                    unique: true
