@@ -15,7 +15,7 @@ import java.sql.SQLException;
 import java.util.Random;
 import java.util.logging.Logger;
 
-@WebServlet(name = "generator servlet", value = "/generator")
+@WebServlet(name = "generator servlet", urlPatterns = {"/generator"})
 public class GeneratorServlet  extends HttpServlet {
     private final Random random = new Random();
     private final UserSaver userSaver = new UserSaver();
@@ -24,26 +24,38 @@ public class GeneratorServlet  extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        PrintWriter out = resp.getWriter();
-        out.println("<html>");
-        out.println("<h1>generator servlet</h1>");
+        String numUsersParam = req.getParameter("numUsers");
+        int numberUsersToGenerate;
 
-        int numberUsersToGenerate = random.nextInt(3) + 1;
-
-        userSaver.generateAndSaveUsers(numberUsersToGenerate);
-        out.println(String.format("<h2>number of users generated: %d</h2>", numberUsersToGenerate));
-        try {
-            messageSaver.generateAndSaveMessagesForUsers();
-            out.println("<h2>generated messages for all users</h2>");
-        } catch (SQLException e) {
-            out.println("<h2>fail to generate messages</h2>");
-            logger.severe(e.getMessage());
-            throw new RuntimeException(e);
+        if (numUsersParam != null) {
+            numberUsersToGenerate = Integer.parseInt(numUsersParam);
+        } else {
+            numberUsersToGenerate = random.nextInt(3) + 1;
         }
 
+        String userGenerationMessage;
+        String messageGenerationMessage;
 
-        out.println("<br>  <a href=\"http://localhost:8080/\"\">homepage</a> <br>\n");
-        out.println("</html>");
+        try {
+            userSaver.generateAndSaveUsers(numberUsersToGenerate);
+            userGenerationMessage = String.format("Number of users generated: %d", numberUsersToGenerate);
+        } catch (Exception e) {
+            userGenerationMessage = "Failed to generate users: " + e.getMessage();
+            logger.severe(e.getMessage());
+        }
+
+        try {
+            messageSaver.generateAndSaveMessagesForUsers();
+            messageGenerationMessage = "Generated messages for all users";
+        } catch (SQLException e) {
+            messageGenerationMessage = "Failed to generate messages: " + e.getMessage();
+            logger.severe(e.getMessage());
+        }
+
+        req.setAttribute("userGenerationMessage", userGenerationMessage);
+        req.setAttribute("messageGenerationMessage", messageGenerationMessage);
+
+        req.getRequestDispatcher("/generate.jsp").forward(req, resp);
 
     }
 }

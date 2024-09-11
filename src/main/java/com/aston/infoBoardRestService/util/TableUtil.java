@@ -21,14 +21,15 @@ public class TableUtil {
     }
 
     public static String loadJdbcDriver() {
-        try {
-            Class.forName("org.postgresql.Driver");
-            return "success - jdbc driver loaded";
-        } catch (ClassNotFoundException e) {
-            logger.severe(e.getMessage());
-            e.printStackTrace();
-            return "jdbc driver failed to load";
-        }
+//        try {
+//            Class.forName("org.postgresql.Driver");
+//            return "success - jdbc driver loaded";
+//        } catch (ClassNotFoundException e) {
+//            logger.severe(e.getMessage());
+//            e.printStackTrace();
+//            return "jdbc driver failed to load";
+//        }
+        return DbUtil.loadJdbcDriver();
     }
 
     public static String createUsersTableIfNotExists() {

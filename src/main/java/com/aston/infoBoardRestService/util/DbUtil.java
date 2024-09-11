@@ -3,6 +3,7 @@ package com.aston.infoBoardRestService.util;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 /**
  * Utility class for managing database connections.
@@ -14,6 +15,8 @@ public class DbUtil {
     private static final String URL = "jdbc:postgresql://localhost:5431/info_board";
     private static final String USER = "postgres";
     private static final String PASSWORD = "postgres";
+
+    private static final Logger logger = Logger.getLogger(DbUtil.class.getName());
 
     // Singleton instance
     private static DbUtil instance;
@@ -33,6 +36,16 @@ public class DbUtil {
             instance = new DbUtil();
         }
         return instance;
+    }
+
+    public static String loadJdbcDriver() {
+        try {
+            Class.forName("org.postgresql.Driver");
+            return "success - jdbc driver loaded";
+        } catch (ClassNotFoundException e) {
+            logger.severe(e.getMessage());
+            return "jdbc driver failed to load";
+        }
     }
 
     /**
