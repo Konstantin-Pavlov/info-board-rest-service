@@ -1,23 +1,42 @@
+# old version - all saved only locally:
+#version: '3.7'
+#
+#services:
+#
+#  postgres:
+#    container_name: info_board_postgres
+#    image: postgres:14.0
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#      POSTGRES_DB: info_board
+#      PGDATA: "/data/info_board/postgres"
+#    volumes:
+#      - postgres:/data/info_board/postgres
+#    ports:
+#      - "5431:5432"
+#    restart: unless-stopped
+#
+#volumes:
+#  postgres:
+
+########################################################################################################################
+
+#new version:
+#No volume: Data changes during runtime won’t persist.
+#The container will revert to the original image state when restarted.
+#when run this - image is pulled from docker hub
 version: '3.7'
 
 services:
 
   postgres:
     container_name: info_board_postgres
-    image: postgres:14.0
+    image: gh0stlyn0mad/info-board-postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: info_board
-      PGDATA: "/data/info_board/postgres"
-    volumes:
-      - postgres:/data/info_board/postgres
     ports:
       - "5431:5432"
     restart: unless-stopped
-
-volumes:
-  postgres:
-
-
-
