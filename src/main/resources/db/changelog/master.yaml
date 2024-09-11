@@ -2,7 +2,7 @@ databaseChangeLog:
 
   #creates
   - include:
-      file: db/changelog/initial/001__08-09-2024--02-create_user_table.yaml
+      file: db/changelog/initial/001__08-09-2024--03-create_user_table.yaml
   - include:
       file: db/changelog/initial/002__08-09-2024--02-create_message_table.yaml
   - include:
