@@ -101,7 +101,7 @@ public class TableUtil {
         try {
             User user = userDao.getUserByEmail(USER.getEmail());
             messageDao.saveMessage(MessageGenerator.generateMessage(user.getId(), user.getName()));
-            return "Sample messages inserted successfully.";
+            return "Sample message inserted successfully.";
         } catch (SQLException e) {
             logger.severe(e.getMessage());
             e.printStackTrace();
