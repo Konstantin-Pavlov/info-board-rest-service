@@ -14,20 +14,40 @@ import java.util.logging.Logger;
 public class UserDao {
     Logger logger = Logger.getLogger(UserDao.class.getName());
 
-    public void saveUser(User user) throws SQLException {
-        if (getUserByEmail(user.getEmail()) == null) {
-            String query = "INSERT INTO users (username, email) VALUES (?, ?)";
-            try (Connection connection = DbUtil.getInstance().getConnection();
-                 PreparedStatement statement = connection.prepareStatement(query)) {
-                statement.setString(1, user.getName());
-                statement.setString(2, user.getEmail());
-                statement.executeUpdate();
-                logger.info("User with email " + user.getEmail() + " has been saved");
+    public List<User> getAllUsers() throws SQLException {
+        String query = "SELECT * FROM users";
+        List<User> users = new ArrayList<>();
+        try (Connection connection = DbUtil.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                User user = getUser(resultSet);
+                users.add(user);
             }
-        } else {
-            logger.warning("User with email " + user.getEmail() + " already exists");
         }
+        return users;
     }
+
+    public User getUserById(Long id) throws SQLException {
+        String query = "SELECT * FROM users WHERE id = ?";
+        try (Connection connection = DbUtil.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setLong(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                User user = new User();
+                user.setId(resultSet.getLong("id"));
+                user.setEmail(resultSet.getString("email"));
+                user.setName(resultSet.getString("username"));
+                logger.info("User with id " + user.getId() + " has been found");
+                return user;
+            } else {
+                logger.warning("User with id " + id + " does not exist");
+            }
+        }
+        return null;
+    }
+
 
     public User getUserByEmail(String email) throws SQLException {
         String query = "SELECT * FROM users WHERE email = ?";
@@ -49,20 +69,20 @@ public class UserDao {
         return null;
     }
 
-    public List<User> getAllUsers() throws SQLException {
-        String query = "SELECT * FROM users";
-        List<User> users = new ArrayList<>();
-        try (Connection connection = DbUtil.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet resultSet = statement.executeQuery()) {
-            while (resultSet.next()) {
-                User user = getUser(resultSet);
-                users.add(user);
+    public void saveUser(User user) throws SQLException {
+        if (getUserByEmail(user.getEmail()) == null) {
+            String query = "INSERT INTO users (username, email) VALUES (?, ?)";
+            try (Connection connection = DbUtil.getInstance().getConnection();
+                 PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, user.getName());
+                statement.setString(2, user.getEmail());
+                statement.executeUpdate();
+                logger.info("User with email " + user.getEmail() + " has been saved");
             }
+        } else {
+            logger.warning("User with email " + user.getEmail() + " already exists");
         }
-        return users;
     }
-
     private static User getUser(ResultSet resultSet) throws SQLException {
         User user = new User();
         user.setId(resultSet.getLong("id"));
@@ -70,4 +90,5 @@ public class UserDao {
         user.setEmail(resultSet.getString("email"));
         return user;
     }
+
 }

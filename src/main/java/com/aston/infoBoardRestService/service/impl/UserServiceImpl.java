@@ -29,4 +29,9 @@ public class UserServiceImpl implements UserService {
                 .map(userMapper::toUserDTO)
                 .toList();
     }
+
+    @Override
+    public UserDto getUserById(Long id) throws SQLException {
+        return userMapper.toUserDTO(userDao.getUserById(id));
+    }
 }
