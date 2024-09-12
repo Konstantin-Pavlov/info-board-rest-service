@@ -1,8 +1,11 @@
 package com.aston.infoBoardRestService.util;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -10,13 +13,31 @@ import java.util.logging.Logger;
  * This class implements the Singleton design pattern to ensure that
  * only one instance of the database utility exists throughout the application.
  * It provides a method to obtain a connection to the PostgreSQL database.
+ * <br><br/>
+ * The static block in the DbUtil class loads the application.properties file using the class loader.
+ * If the file is not found or an error occurs while loading it, an IOException is thrown, and the application will not start.
  */
 public class DbUtil {
-    private static final String URL = "jdbc:postgresql://localhost:5431/info_board";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "postgres";
-
     private static final Logger logger = Logger.getLogger(DbUtil.class.getName());
+    private static final Properties properties = new Properties();
+
+    static {
+        try (InputStream input = DbUtil.class.getClassLoader().getResourceAsStream("application.properties")) {
+            if (input == null) {
+                logger.severe("Sorry, unable to find application.properties");
+                throw new IOException("application.properties not found");
+            }
+            properties.load(input);
+        } catch (IOException ex) {
+            logger.severe("Error loading application.properties: " + ex.getMessage());
+            throw new ExceptionInInitializerError(ex);
+        }
+    }
+
+    private static final String URL = properties.getProperty("db.url");
+    private static final String USER = properties.getProperty("db.username");
+    private static final String PASSWORD = properties.getProperty("db.password");
+    private static final String DRIVER = properties.getProperty("db.driver");
 
     // Singleton instance
     private static DbUtil instance;
@@ -38,9 +59,14 @@ public class DbUtil {
         return instance;
     }
 
+    /**
+     * Loads the JDBC driver for PostgreSQL.
+     *
+     * @return a message indicating whether the driver was successfully loaded
+     */
     public static String loadJdbcDriver() {
         try {
-            Class.forName("org.postgresql.Driver");
+            Class.forName(DRIVER);
             return "success - jdbc driver loaded";
         } catch (ClassNotFoundException e) {
             logger.severe(e.getMessage());
