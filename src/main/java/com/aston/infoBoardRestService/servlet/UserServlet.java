@@ -13,30 +13,58 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet(name = "user servlet", value = "/user-servlet")
+@WebServlet(name = "user servlet", urlPatterns = {"/users/*"})
 public class UserServlet extends HttpServlet {
     private final UserService userService = new UserServiceImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         PrintWriter out = resp.getWriter();
-
         out.println("<html>");
-        out.println("<h1>user list servlet using jdbc drivers</h1>");
+        out.println("<h1>User Servlet</h1>");
 
-        try {
-            List<UserDto> users = userService.getAllUsers();
-            out.println("<ul>");
-            for (UserDto user : users) {
-                out.println("<li>" + user.getName() + " (" + user.getEmail() + ")</li>");
+        String pathInfo = req.getPathInfo(); // Get the path info after /user-servlet
+        if (pathInfo != null && pathInfo.length() > 1) {
+            String param = pathInfo.substring(1); // Remove the leading "/"
+            try {
+                if (param.contains("@")) {
+                    // Assume it's an email
+                    UserDto user = userService.getUserByEmail(param);
+                    if (user != null) {
+                        out.println(String.format("<p>User <b>%s</b> with email <b>%s</b> found", user.getName(), user.getEmail()));
+                    } else {
+                        out.println("<p>No user found with email: " + param + "</p>");
+                    }
+                } else {
+                    // Assume it's an ID
+                    Long id = Long.parseLong(param);
+                    UserDto user = userService.getUserById(id);
+                    if (user != null) {
+                        out.println(String.format("<p>User <b>%s</b> with id <b>%d</b> found", user.getName(), user.getId()));
+                    } else {
+                        out.println("<p>No user found with ID: " + id + "</p>");
+                    }
+                }
+            } catch (SQLException e) {
+                out.println("<p>Error retrieving user: " + e.getMessage() + "</p>");
+            } catch (NumberFormatException e) {
+                out.println("<p>Invalid ID format: " + param + "</p>");
             }
-            out.println("</ul>");
-        } catch (SQLException e) {
-            out.println("<p>Error retrieving users: " + e.getMessage() + "</p>");
+        } else {
+            // No specific user requested, return all users
+            try {
+                List<UserDto> users = userService.getAllUsers();
+                out.println("<ul>");
+                for (UserDto user : users) {
+                    out.println("<li>" + user.getName() + " (" + user.getEmail() + ")</li>");
+                }
+                out.println("</ul>");
+            } catch (SQLException e) {
+                out.println("<p>Error retrieving users: " + e.getMessage() + "</p>");
+            }
         }
 
         out.println("<br>");
-
         out.println("<br>  <a href=\"http://localhost:8080/\"\">homepage</a> <br>\n");
         out.println("</html>");
     }
