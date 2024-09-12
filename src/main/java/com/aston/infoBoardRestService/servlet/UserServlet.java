@@ -13,7 +13,7 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet(name = "user servlet", urlPatterns = {"/user-servlet/*"})
+@WebServlet(name = "user servlet", urlPatterns = {"/users/*"})
 public class UserServlet extends HttpServlet {
     private final UserService userService = new UserServiceImpl();
 
