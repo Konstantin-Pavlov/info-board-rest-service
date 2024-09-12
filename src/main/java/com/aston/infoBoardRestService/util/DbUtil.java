@@ -13,6 +13,9 @@ import java.util.logging.Logger;
  * This class implements the Singleton design pattern to ensure that
  * only one instance of the database utility exists throughout the application.
  * It provides a method to obtain a connection to the PostgreSQL database.
+ * <br><br/>
+ * The static block in the DbUtil class loads the application.properties file using the class loader.
+ * If the file is not found or an error occurs while loading it, an IOException is thrown, and the application will not start.
  */
 public class DbUtil {
     private static final Logger logger = Logger.getLogger(DbUtil.class.getName());
@@ -36,7 +39,6 @@ public class DbUtil {
     private static final String PASSWORD = properties.getProperty("db.password");
     private static final String DRIVER = properties.getProperty("db.driver");
 
-
     // Singleton instance
     private static DbUtil instance;
 
@@ -57,6 +59,11 @@ public class DbUtil {
         return instance;
     }
 
+    /**
+     * Loads the JDBC driver for PostgreSQL.
+     *
+     * @return a message indicating whether the driver was successfully loaded
+     */
     public static String loadJdbcDriver() {
         try {
             Class.forName(DRIVER);
