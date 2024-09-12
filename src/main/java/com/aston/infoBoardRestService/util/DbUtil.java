@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  * The static block in the DbUtil class loads the application.properties file using the class loader.
  * If the file is not found or an error occurs while loading it, an IOException is thrown, and the application will not start.
  */
-public class DbUtil {
+public final class DbUtil {
     private static final Logger logger = Logger.getLogger(DbUtil.class.getName());
     private static final Properties properties = new Properties();
 
@@ -38,6 +38,7 @@ public class DbUtil {
     private static final String USER = properties.getProperty("db.username");
     private static final String PASSWORD = properties.getProperty("db.password");
     private static final String DRIVER = properties.getProperty("db.driver");
+    private static final String LIQUIBASE_CHANGELOG_PATH = properties.getProperty("liquibase.change_log_file_path");
 
     // Singleton instance
     private static DbUtil instance;
@@ -83,4 +84,14 @@ public class DbUtil {
     public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
+
+    /**
+     * Retrieves the path to the Liquibase changelog file from the liquibase.properties file.
+     *
+     * @return the path to the Liquibase changelog file
+     */
+    public static String getChangelogPath() {
+        return LIQUIBASE_CHANGELOG_PATH;
+    }
+
 }

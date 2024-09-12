@@ -39,7 +39,7 @@ public class LiquibaseServletListener implements ServletContextListener {
     }
 
     private void runLiquibase() throws SQLException, LiquibaseException {
-        String changeLogFile = "db/changelog/master.yaml";
+        String changeLogFile = DbUtil.getChangelogPath();
 
         log.info(TableUtil.loadJdbcDriver());
 
