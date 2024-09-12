@@ -1,5 +1,6 @@
 package com.aston.infoBoardRestService.servlet;
 
+import com.aston.infoBoardRestService.util.DbUtil;
 import com.aston.infoBoardRestService.util.TableUtil;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
@@ -15,7 +16,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
@@ -39,26 +39,13 @@ public class LiquibaseServletListener implements ServletContextListener {
     }
 
     private void runLiquibase() throws SQLException, LiquibaseException {
-        String url = "jdbc:postgresql://localhost:5431/info_board";
-        String username = "postgres";
-        String password = "postgres";
         String changeLogFile = "db/changelog/master.yaml";
 
         log.info(TableUtil.loadJdbcDriver());
 
-        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+        try (Connection connection = DbUtil.getInstance().getConnection()) {
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
             ResourceAccessor resourceAccessor = new ClassLoaderResourceAccessor(getClass().getClassLoader());
-
-            // Temporary code to test resource loading
-//            try (InputStream inputStream = resourceAccessor.openStream(null, changeLogFile)) {
-//                if (inputStream == null) {
-//                    throw new RuntimeException("Changelog file not found: " + changeLogFile);
-//                } else {
-//                    log.info("Changelog file found: " + changeLogFile);
-//                }
-//            }
-
             try (Liquibase liquibase = new Liquibase(changeLogFile, resourceAccessor, database)) {
                 liquibase.update(new Contexts(), new LabelExpression());
             }
