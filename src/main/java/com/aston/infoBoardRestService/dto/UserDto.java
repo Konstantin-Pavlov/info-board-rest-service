@@ -1,9 +1,14 @@
 package com.aston.infoBoardRestService.dto;
 
+import com.aston.infoBoardRestService.entity.Message;
+
+import java.util.List;
+
 public class UserDto {
     private Long id;
     private String name;
     private String email;
+    private List<Message> messages;
 
     public Long getId() {
         return id;
@@ -27,5 +32,13 @@ public class UserDto {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
     }
 }

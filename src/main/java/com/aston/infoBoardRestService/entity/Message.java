@@ -13,6 +13,8 @@ public class Message {
 
     private LocalDateTime timestamp;
 
+    private User user;
+
     public Message() {
     }
 
@@ -61,5 +63,13 @@ public class Message {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

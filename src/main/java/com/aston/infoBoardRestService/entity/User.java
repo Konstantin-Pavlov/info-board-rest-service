@@ -1,9 +1,12 @@
 package com.aston.infoBoardRestService.entity;
 
+import java.util.List;
+
 public class User {
     private Long id;
     private String name;
     private String email;
+    private List<Message> messages;
 
     public User() {
     }
@@ -36,5 +39,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
     }
 }

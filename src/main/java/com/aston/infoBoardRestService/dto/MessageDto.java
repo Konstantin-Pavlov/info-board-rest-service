@@ -1,5 +1,7 @@
 package com.aston.infoBoardRestService.dto;
 
+import com.aston.infoBoardRestService.entity.User;
+
 import java.time.LocalDateTime;
 
 public class MessageDto {
@@ -12,6 +14,7 @@ public class MessageDto {
     private String authorName;
 
     private LocalDateTime timestamp;
+    private User user;
 
     public Long getId() {
         return id;
@@ -51,5 +54,13 @@ public class MessageDto {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
