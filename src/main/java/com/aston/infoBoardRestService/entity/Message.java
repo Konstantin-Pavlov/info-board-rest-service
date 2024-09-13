@@ -11,6 +11,8 @@ public class Message {
 
     private String authorName;
 
+    private String authorEmail;
+
     private LocalDateTime timestamp;
 
     private User user;
@@ -55,6 +57,14 @@ public class Message {
 
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
+    }
+
+    public String getAuthorEmail() {
+        return authorEmail;
+    }
+
+    public void setAuthorEmail(String authorEmail) {
+        this.authorEmail = authorEmail;
     }
 
     public LocalDateTime getTimestamp() {
