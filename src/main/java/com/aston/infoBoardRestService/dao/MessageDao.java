@@ -55,9 +55,17 @@ public class MessageDao {
             }
         }
         return messages;
-    }    public List<Message> getMessagesByAuthorEmail(String email) throws SQLException {
+    }
+
+    public List<Message> getMessagesByAuthorEmail(String email) throws SQLException {
         // todo - fix query
-        String query = "SELECT * FROM messages WHERE author_id = ?";
+        String query = """
+                SELECT m.*, u.email
+                FROM messages m
+                INNER JOIN users u ON m.author_id = u.id
+                WHERE u.email = ?;
+                """;
+
         List<Message> messages = new ArrayList<>();
         try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
