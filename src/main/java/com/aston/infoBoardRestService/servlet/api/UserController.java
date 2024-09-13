@@ -1,4 +1,4 @@
-package com.aston.infoBoardRestService.servlet.postman;
+package com.aston.infoBoardRestService.servlet.api;
 
 import com.aston.infoBoardRestService.dto.UserDto;
 import com.aston.infoBoardRestService.service.UserService;
