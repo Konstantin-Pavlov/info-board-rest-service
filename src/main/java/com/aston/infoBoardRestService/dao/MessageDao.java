@@ -31,13 +31,22 @@ public class MessageDao {
     }
 
     public Message getMessage(Long id) throws SQLException {
-        String query = "SELECT * FROM messages WHERE id = ?";
+        String query = """
+                    SELECT m.id, m.author_id, m.content, m.author_name, m.timestamp,
+                           u.id AS user_id, u.username, u.email
+                    FROM messages m
+                    LEFT JOIN users u ON m.author_id = u.id
+                    WHERE m.id = ?;
+                """;
         try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return getMessage(resultSet);
+                Message message = getMessage(resultSet);
+                User user = getUser(resultSet);
+                message.setUser(user);
+                return message;
             }
         }
         return null;
@@ -45,11 +54,11 @@ public class MessageDao {
 
     public List<Message> getAllMessages() throws SQLException {
         String query = """
-    SELECT m.id, m.author_id, m.content, m.author_name, m.timestamp,
-           u.id AS user_id, u.username, u.email
-    FROM messages m
-    LEFT JOIN users u ON m.author_id = u.id;
-""";
+                    SELECT m.id, m.author_id, m.content, m.author_name, m.timestamp,
+                           u.id AS user_id, u.username, u.email
+                    FROM messages m
+                    LEFT JOIN users u ON m.author_id = u.id;
+                """;
         List<Message> messages = new ArrayList<>();
         try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query);
@@ -65,7 +74,13 @@ public class MessageDao {
     }
 
     public List<Message> getMessagesByAuthorId(Long authorId) throws SQLException {
-        String query = "SELECT * FROM messages WHERE author_id = ?";
+        String query = """
+                    SELECT m.id, m.author_id, m.content, m.author_name, m.timestamp,
+                           u.id AS user_id, u.username, u.email
+                    FROM messages m
+                    LEFT JOIN users u ON m.author_id = u.id
+                    WHERE u.id = ?;
+                """;
         List<Message> messages = new ArrayList<>();
         try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -73,6 +88,8 @@ public class MessageDao {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Message message = getMessage(resultSet);
+                User user = getUser(resultSet);
+                message.setUser(user);
                 messages.add(message);
             }
         }
@@ -81,10 +98,11 @@ public class MessageDao {
 
     public List<Message> getMessagesByAuthorEmail(String email) throws SQLException {
         String query = """
-                SELECT m.*, u.email
-                FROM messages m
-                INNER JOIN users u ON m.author_id = u.id
-                WHERE u.email = ?;
+                    SELECT m.id, m.author_id, m.content, m.author_name, m.timestamp,
+                           u.id AS user_id, u.username, u.email
+                    FROM messages m
+                    LEFT JOIN users u ON m.author_id = u.id
+                    WHERE u.email = ?;
                 """;
 
         List<Message> messages = new ArrayList<>();
@@ -94,6 +112,8 @@ public class MessageDao {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Message message = getMessage(resultSet);
+                User user = getUser(resultSet);
+                message.setUser(user);
                 messages.add(message);
             }
         }

@@ -52,6 +52,17 @@ public class MessageController extends HttpServlet {
                         resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                         resp.getWriter().print(String.format("messages for user with email %s not found", param));
                     }
+                } else if (param.contains("get-by-author-id")) {
+                    Long authorId = Long.parseLong(param.split("/")[1]);
+                    // Assume it's an user id
+                    List<MessageDto> messages = messageService.getMessagesByAuthorId(authorId);
+                    if (messages != null) {
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        objectMapper.writeValue(resp.getWriter(), messages);
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                        resp.getWriter().print(String.format("messages for user with id %d not found", authorId));
+                    }
                 } else {
                     // Assume it's an ID
                     Long id = Long.parseLong(param);
@@ -72,7 +83,7 @@ public class MessageController extends HttpServlet {
                 resp.getWriter().write("{\"message\": \"Invalid ID format: " + param + "\"}");
             }
         } else {
-            // No specific user requested, return all users
+            // No specific message requested, return all messages
             try {
                 List<MessageDto> messages = messageService.getAllMessages();
                 logger.log(Level.INFO, "Retrieved messages: {0}", objectMapper.writeValueAsString(messages.size()));

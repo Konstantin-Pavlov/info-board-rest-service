@@ -3,7 +3,9 @@ package com.aston.infoBoardRestService.servlet.api;
 import com.aston.infoBoardRestService.dto.UserDto;
 import com.aston.infoBoardRestService.service.UserService;
 import com.aston.infoBoardRestService.service.impl.UserServiceImpl;
+import com.aston.infoBoardRestService.util.LocalDateTimeSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,12 +14,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.logging.Logger;
 
 @WebServlet(name = "user controller", urlPatterns = {"/api/users/*"})
 public class UserController extends HttpServlet {
+    private static final Logger logger = Logger.getLogger(MessageController.class.getName());
     private final UserService userService = new UserServiceImpl();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
+
+    public UserController() {
+        this.objectMapper= new ObjectMapper();
+        JavaTimeModule javaTimeModule = new JavaTimeModule();
+        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
+        this.objectMapper.registerModule(javaTimeModule);
+    }
 
 
     @Override
