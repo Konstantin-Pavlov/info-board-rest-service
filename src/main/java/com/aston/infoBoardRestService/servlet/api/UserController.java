@@ -6,6 +6,7 @@ import com.aston.infoBoardRestService.service.impl.UserServiceImpl;
 import com.aston.infoBoardRestService.util.LocalDateTimeSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import liquibase.pro.packaged.S;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -48,6 +49,7 @@ public class UserController extends HttpServlet {
                         resp.setStatus(HttpServletResponse.SC_OK);
                         objectMapper.writeValue(resp.getWriter(), user);
                     } else {
+                        logger.warning("User with email " + param + " not found");
                         resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                         resp.getWriter().print(String.format("User with email %s not found", param));
                     }
@@ -59,14 +61,17 @@ public class UserController extends HttpServlet {
                         resp.setStatus(HttpServletResponse.SC_OK);
                         objectMapper.writeValue(resp.getWriter(), user);
                     } else {
+                        logger.warning("User with id " + id + " not found");
                         resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                         resp.getWriter().print(String.format("User with id %s not found", id));
                     }
                 }
             } catch (SQLException e) {
+                logger.warning(String.format("error while getting user: %s", e.getMessage()));
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 resp.getWriter().print("{\"message\": \"Error retrieving user: " + e.getMessage() + "\"}");
             } catch (NumberFormatException e) {
+                logger.warning(String.format("invalid id format: %s", param));
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 resp.getWriter().write("{\"message\": \"Invalid ID format: " + param + "\"}");
             }
@@ -77,6 +82,7 @@ public class UserController extends HttpServlet {
                 resp.setStatus(HttpServletResponse.SC_OK);
                 objectMapper.writeValue(resp.getWriter(), users);
             } catch (SQLException e) {
+                logger.warning(String.format("error while getting users: %s", e.getMessage()));
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 resp.getWriter().write("{\"message\": \"Error retrieving users: " + e.getMessage() + "\"}");
             }
