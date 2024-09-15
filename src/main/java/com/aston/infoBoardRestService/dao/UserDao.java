@@ -111,7 +111,7 @@ public class UserDao {
         return user;
     }
 
-    public void saveUser(User user) throws SQLException {
+    public boolean saveUser(User user) throws SQLException {
         if (getUserByEmail(user.getEmail()) == null) {
             String query = "INSERT INTO users (username, email) VALUES (?, ?)";
             try (Connection connection = DbUtil.getInstance().getConnection();
@@ -120,9 +120,11 @@ public class UserDao {
                 statement.setString(2, user.getEmail());
                 statement.executeUpdate();
                 logger.info("User with email " + user.getEmail() + " has been saved");
+                return true;
             }
         } else {
             logger.warning("User with email " + user.getEmail() + " already exists");
+            return false;
         }
     }
 

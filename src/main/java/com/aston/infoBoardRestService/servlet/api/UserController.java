@@ -86,4 +86,35 @@ public class UserController extends HttpServlet {
             }
         }
     }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+
+        try {
+            // Parse the request body to get the UserDto
+            UserDto userDto = objectMapper.readValue(req.getReader(), UserDto.class);
+
+            // Save the user using the UserService
+            boolean isUserSaved = userService.saveUser(userDto);
+
+            if (isUserSaved) {
+                resp.setStatus(HttpServletResponse.SC_CREATED); // HTTP 201 Created
+                objectMapper.writeValue(resp.getWriter(), userDto); // Return the saved user
+            } else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // HTTP 400 Bad Request
+                resp.getWriter().write("{\"message\": \"User could not be saved\"}");
+            }
+        } catch (SQLException e) {
+            logger.warning(String.format("error while saving user: %s", e.getMessage()));
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("{\"message\": \"Error saving user: " + e.getMessage() + "\"}");
+        } catch (Exception e) {
+            logger.warning(String.format("error in request: %s", e.getMessage()));
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write("{\"message\": \"Invalid request data\"}");
+        }
+    }
+
 }
