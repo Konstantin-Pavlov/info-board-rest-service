@@ -126,7 +126,6 @@ public class UserDao {
         }
     }
 
-    //todo - add messages list
     private User getUser(ResultSet resultSet) throws SQLException {
         User user = new User();
         user.setId(resultSet.getLong("id"));
