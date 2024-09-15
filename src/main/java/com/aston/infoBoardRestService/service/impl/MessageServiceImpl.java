@@ -21,7 +21,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageDto getMessage(Long id) throws SQLException {
+    public MessageDto getMessageById(Long id) throws SQLException {
         Message message = messageDao.getMessage(id);
         if (message != null) {
             return messageMapper.toMessageDto(message);
@@ -39,6 +39,12 @@ public class MessageServiceImpl implements MessageService {
     public List<MessageDto> getMessagesByAuthorId(Long authorId) throws SQLException {
         List<Message> messagesByAuthorId = messageDao.getMessagesByAuthorId(authorId);
         return messageMapper.toMessageDtoList(messagesByAuthorId);
+    }
+
+    @Override
+    public List<MessageDto> getMessagesByAuthorEmail(String email) throws SQLException {
+        List<Message> messages = messageDao.getMessagesByAuthorEmail(email);
+        return messageMapper.toMessageDtoList(messages);
     }
 
     @Override

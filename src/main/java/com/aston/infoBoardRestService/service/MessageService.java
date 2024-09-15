@@ -8,11 +8,13 @@ import java.util.List;
 public interface MessageService {
     void saveMessage(MessageDto messageDTO) throws SQLException;
 
-    MessageDto getMessage(Long id) throws SQLException;
+    MessageDto getMessageById(Long id) throws SQLException;
 
     List<MessageDto> getAllMessages() throws SQLException;
 
     List<MessageDto> getMessagesByAuthorId(Long authorId) throws SQLException;
+
+    List<MessageDto> getMessagesByAuthorEmail(String email) throws SQLException;
 
     void updateMessage(MessageDto messageDTO) throws SQLException;
 

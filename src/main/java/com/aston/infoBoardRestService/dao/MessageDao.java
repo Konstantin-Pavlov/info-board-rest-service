@@ -1,6 +1,7 @@
 package com.aston.infoBoardRestService.dao;
 
 import com.aston.infoBoardRestService.entity.Message;
+import com.aston.infoBoardRestService.entity.User;
 import com.aston.infoBoardRestService.util.DbUtil;
 
 import java.sql.Connection;
@@ -42,6 +43,27 @@ public class MessageDao {
         return null;
     }
 
+    public List<Message> getAllMessages() throws SQLException {
+        String query = """
+    SELECT m.id, m.author_id, m.content, m.author_name, m.timestamp,
+           u.id AS user_id, u.username, u.email
+    FROM messages m
+    LEFT JOIN users u ON m.author_id = u.id;
+""";
+        List<Message> messages = new ArrayList<>();
+        try (Connection connection = DbUtil.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                Message message = getMessage(resultSet);
+                User user = getUser(resultSet);
+                message.setUser(user);
+                messages.add(message);
+            }
+        }
+        return messages;
+    }
+
     public List<Message> getMessagesByAuthorId(Long authorId) throws SQLException {
         String query = "SELECT * FROM messages WHERE author_id = ?";
         List<Message> messages = new ArrayList<>();
@@ -58,7 +80,6 @@ public class MessageDao {
     }
 
     public List<Message> getMessagesByAuthorEmail(String email) throws SQLException {
-        // todo - fix query
         String query = """
                 SELECT m.*, u.email
                 FROM messages m
@@ -71,21 +92,6 @@ public class MessageDao {
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                Message message = getMessage(resultSet);
-                messages.add(message);
-            }
-        }
-        return messages;
-    }
-
-
-    public List<Message> getAllMessages() throws SQLException {
-        String query = "SELECT * FROM messages";
-        List<Message> messages = new ArrayList<>();
-        try (Connection connection = DbUtil.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 Message message = getMessage(resultSet);
                 messages.add(message);
@@ -115,7 +121,7 @@ public class MessageDao {
         }
     }
 
-    private static Message getMessage(ResultSet resultSet) throws SQLException {
+    private Message getMessage(ResultSet resultSet) throws SQLException {
         Message message = new Message();
         message.setId(resultSet.getLong("id"));
         message.setAuthorId(resultSet.getLong("author_id"));
@@ -123,5 +129,13 @@ public class MessageDao {
         message.setAuthorName(resultSet.getString("author_name"));
         message.setTimestamp(resultSet.getObject("timestamp", LocalDateTime.class));
         return message;
+    }
+
+    private User getUser(ResultSet resultSet) throws SQLException {
+        User user = new User();
+        user.setId(resultSet.getLong("user_id"));
+        user.setName(resultSet.getString("username"));
+        user.setEmail(resultSet.getString("email"));
+        return user;
     }
 }
