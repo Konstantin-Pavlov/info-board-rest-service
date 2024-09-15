@@ -6,7 +6,6 @@ import com.aston.infoBoardRestService.service.impl.UserServiceImpl;
 import com.aston.infoBoardRestService.util.LocalDateTimeSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import liquibase.pro.packaged.S;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -26,7 +25,7 @@ public class UserController extends HttpServlet {
     private final ObjectMapper objectMapper;
 
     public UserController() {
-        this.objectMapper= new ObjectMapper();
+        this.objectMapper = new ObjectMapper();
         JavaTimeModule javaTimeModule = new JavaTimeModule();
         javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
         this.objectMapper.registerModule(javaTimeModule);
@@ -34,7 +33,7 @@ public class UserController extends HttpServlet {
 
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 
