@@ -7,7 +7,7 @@
     <display-name>InfoBoardRestService</display-name>
 
     <listener>
-        <listener-class>com.aston.infoBoardRestService.servlet.LiquibaseServletListener</listener-class>
+        <listener-class>com.aston.infoBoardRestService.servlet.servletListener</listener-class>
     </listener>
 
 

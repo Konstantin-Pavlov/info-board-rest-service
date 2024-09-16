@@ -19,27 +19,41 @@ import java.util.logging.Logger;
 @WebServlet(name = "order controller", value = "/api/orders")
 public class OrderController extends HttpServlet {
     private static final Logger logger = Logger.getLogger(MessageController.class.getName());
-    private final OrderService orderService =  new OrderServiceImpl();
+    private  OrderService orderService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    public void init() throws ServletException {
+        super.init();
+        final Object o = getServletContext().getAttribute("orderService");
+        this.orderService = (OrderService) o;
+    }
+
+    //     Constructor injection
+//    public OrderController(OrderService orderService) {
+//        this.orderService = orderService;
+//    }
+
+    @Override
+    public void doGet(HttpServletRequest req, HttpServletResponse response)
             throws ServletException, IOException {
-//        req.getRequestDispatcher("/WEB-INF/view/index.jsp").forward(req, resp);
-
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-
-
-
+//        req.getRequestDispatcher("/WEB-INF/view/index.jsp").forward(req, response);
         try {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
             List<Order> orders = orderService.getOrders();
             logger.log(Level.INFO, "Retrieved messages: {0}", objectMapper.writeValueAsString(orders.size()));
-            resp.setStatus(HttpServletResponse.SC_OK);
-            objectMapper.writeValue(resp.getWriter(), orders);
+            response.setStatus(HttpServletResponse.SC_OK);
+            objectMapper.writeValue(response.getWriter(), orders);
         } catch (SQLException e) {
             logger.severe(String.format("SQL Exception: %s", e.getMessage()));
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"error\": \"An error occurred\"}");
         }
 
     }

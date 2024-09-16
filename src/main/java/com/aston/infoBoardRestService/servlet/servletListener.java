@@ -1,5 +1,8 @@
 package com.aston.infoBoardRestService.servlet;
 
+import com.aston.infoBoardRestService.service.OrderService;
+import com.aston.infoBoardRestService.service.impl.OrderServiceImpl;
+import com.aston.infoBoardRestService.servlet.api.OrderController;
 import com.aston.infoBoardRestService.util.DbUtil;
 import com.aston.infoBoardRestService.util.TableUtil;
 import liquibase.Contexts;
@@ -21,7 +24,7 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 
 @WebListener
-public class LiquibaseServletListener implements ServletContextListener {
+public class servletListener implements ServletContextListener {
     private final Logger log = Logger.getLogger(this.getClass().getName());
 
     @Override
@@ -33,8 +36,10 @@ public class LiquibaseServletListener implements ServletContextListener {
             throw new RuntimeException("Failed to initialize Liquibase", e);
         }
 
+        OrderService orderService = new OrderServiceImpl();
+//        OrderController orderController = new OrderController(orderService);
         final ServletContext servletContext = servletContextEvent.getServletContext();
-//        servletContext.setAttribute();
+        servletContext.setAttribute("orderService", orderService);
 
     }
 
