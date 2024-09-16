@@ -7,10 +7,12 @@ import com.aston.infoBoardRestService.util.LocalDateTimeSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -89,33 +91,65 @@ public class UserController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String email = request.getParameter("email");
-        String name = request.getParameter("name");
-        boolean isSaved;
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
 
-        if (email != null && name != null) {
-            UserDto userDto = new UserDto();
-            userDto.setEmail(email);
-            userDto.setName(name);
-
-            try {
-                isSaved = userService.saveUser(userDto);
-            } catch (SQLException e) {
-                logger.warning(String.format("error while saving user with email %s; error message: %s", email, e.getMessage()));
-                throw new RuntimeException(e);
+        // Read the request body
+        StringBuilder jsonBuffer = new StringBuilder();
+        String line;
+        try (BufferedReader reader = request.getReader()) {
+            while ((line = reader.readLine()) != null) {
+                jsonBuffer.append(line);
             }
-
-            if (isSaved) {
-                response.getWriter().write("User saved successfully");
-                response.setStatus(HttpServletResponse.SC_OK);
-            } else {
-                response.getWriter().write("Failed to save user");
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            }
-        } else {
-            response.getWriter().write("Invalid input");
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
+
+        // Parse the JSON input
+        String jsonString = jsonBuffer.toString();
+        UserDto userDto;
+        try {
+            userDto = objectMapper.readValue(jsonString, UserDto.class);
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"message\": \"Invalid JSON format\"}");
+            return;
+        }
+
+        // Validate the input
+        if (userDto.getEmail() == null || userDto.getName() == null) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"message\": \"Email and name are required\"}");
+            return;
+        }
+
+        // Save the user
+        boolean isSaved;
+        try {
+            isSaved = userService.saveUser(userDto);
+        } catch (SQLException e) {
+            logger.warning(String.format("Error while saving user with email %s; error message: %s", userDto.getEmail(), e.getMessage()));
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"message\": \"Error saving user: " + e.getMessage() + "\"}");
+            return;
+        }
+
+        // Respond to the client
+        if (isSaved) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write("{\"message\": \"User saved successfully\"}");
+        } else {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"message\": \"Failed to save user\"}");
+        }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doPut(req, resp);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doDelete(req, resp);
     }
 
 
