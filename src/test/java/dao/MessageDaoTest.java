@@ -36,12 +36,14 @@ public class MessageDaoTest {
     }
 
     @Test
+    @DisplayName("save message")
     public void testSaveMessage() throws SQLException {
         Message message = TestUtil.getNewMessage(dbUser);
         Assertions.assertTrue(messageDao.saveMessage(message));
     }
 
     @Test
+    @DisplayName("get message")
     public void testGetMessage() throws SQLException {
         Assertions.assertFalse(messageDao.getMessagesByAuthorEmail(dbUser.getEmail()).isEmpty());
     }
@@ -52,7 +54,7 @@ public class MessageDaoTest {
         Message message = messageDao.getMessagesByAuthorEmail(dbUser.getEmail()).get(0);
         Assertions.assertTrue(messageDao.deleteMessage(message.getId()));
 
-        Assertions.assertNull( messageDao.getMessage(message.getId()));
+        Assertions.assertNull(messageDao.getMessage(message.getId()));
     }
 
 }

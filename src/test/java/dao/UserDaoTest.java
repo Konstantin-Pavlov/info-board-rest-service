@@ -41,17 +41,20 @@ public class UserDaoTest {
     }
 
     @Test
+    @DisplayName("test that user's message list is empty")
     public void getUserMessagesFromUserWithoutMessages() throws SQLException {
         List<Message> messagesByAuthorEmail = messageDao.getMessagesByAuthorEmail(userWithoutMessages.getEmail());
         Assertions.assertTrue(messagesByAuthorEmail.isEmpty());
     }
 
     @Test
+    @DisplayName("test saving user with messages list")
     public void saveUserWithMessages() throws SQLException {
         Assertions.assertTrue(userDao.saveUser(userWithMessages));
     }
 
     @Test
+    @DisplayName("test user with messages")
     public void getUserMessagesFromUserWithMessages() throws SQLException {
         List<Message> messagesByAuthorEmail = messageDao.getMessagesByAuthorEmail(userWithMessages.getEmail());
         Assertions.assertEquals(2, messagesByAuthorEmail.size());
