@@ -13,8 +13,8 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper = UserMapper.INSTANCE;
 
     @Override
-    public void saveUser(UserDto userDto) throws SQLException {
-        userDao.saveUser(userMapper.ToUser(userDto));
+    public boolean saveUser(UserDto userDto) throws SQLException {
+        return userDao.saveUser(userMapper.ToUser(userDto));
     }
 
     @Override

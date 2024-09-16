@@ -86,4 +86,37 @@ public class UserController extends HttpServlet {
             }
         }
     }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String email = request.getParameter("email");
+        String name = request.getParameter("name");
+        boolean isSaved;
+
+        if (email != null && name != null) {
+            UserDto userDto = new UserDto();
+            userDto.setEmail(email);
+            userDto.setName(name);
+
+            try {
+                isSaved = userService.saveUser(userDto);
+            } catch (SQLException e) {
+                logger.warning(String.format("error while saving user with email %s; error message: %s", email, e.getMessage()));
+                throw new RuntimeException(e);
+            }
+
+            if (isSaved) {
+                response.getWriter().write("User saved successfully");
+                response.setStatus(HttpServletResponse.SC_OK);
+            } else {
+                response.getWriter().write("Failed to save user");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
+        } else {
+            response.getWriter().write("Invalid input");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+    }
+
+
 }

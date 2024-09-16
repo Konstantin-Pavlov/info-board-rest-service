@@ -17,7 +17,7 @@ public class MessageDao {
     Logger logger = Logger.getLogger(UserDao.class.getName());
 
 
-    public void saveMessage(Message message) throws SQLException {
+    public boolean saveMessage(Message message) throws SQLException {
         String query = "INSERT INTO messages (author_id, content, author_name, timestamp) VALUES (?, ?, ?, ?)";
         try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -26,7 +26,10 @@ public class MessageDao {
             statement.setString(3, message.getAuthorName());
             statement.setObject(4, message.getTimestamp());
             statement.executeUpdate();
-            logger.info("Message with author name " + message.getAuthorName() + " has been saved");
+            logger.info(String.format("Message with author name %s and content <%s> has been saved", message.getAuthorName(), message.getContent()));
+            return true;
+        } catch (SQLException e) {
+            return false;
         }
     }
 
@@ -132,13 +135,18 @@ public class MessageDao {
         }
     }
 
-    public void deleteMessage(Long id) throws SQLException {
+    public boolean deleteMessage(Long id) throws SQLException {
         String query = "DELETE FROM messages WHERE id = ?";
+        if(getMessage(id) == null) {
+            logger.warning(String.format("Message with id %s not found", id));
+            return false;
+        }
         try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, id);
             statement.executeUpdate();
         }
+        return true;
     }
 
     private Message getMessage(ResultSet resultSet) throws SQLException {

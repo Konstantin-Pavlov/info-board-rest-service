@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 @WebServlet(name = "message controller", urlPatterns = {"/api/messages/*"})
 public class MessageController extends HttpServlet {
     private static final Logger logger = Logger.getLogger(MessageController.class.getName());
-    private final MessageService messageService = new MessageServiceImpl();
+    private MessageService messageService;
     private final ObjectMapper objectMapper;
 
     public MessageController() {
@@ -32,7 +32,12 @@ public class MessageController extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    public void init() {
+        this.messageService = new MessageServiceImpl();
+    }
+
+    @Override
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 

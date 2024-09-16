@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface MessageService {
-    void saveMessage(MessageDto messageDTO) throws SQLException;
+    boolean saveMessage(MessageDto messageDTO) throws SQLException;
 
     MessageDto getMessageById(Long id) throws SQLException;
 
@@ -18,5 +18,5 @@ public interface MessageService {
 
     void updateMessage(MessageDto messageDTO) throws SQLException;
 
-    void deleteMessage(Long id) throws SQLException;
+    boolean deleteMessage(Long id) throws SQLException;
 }
