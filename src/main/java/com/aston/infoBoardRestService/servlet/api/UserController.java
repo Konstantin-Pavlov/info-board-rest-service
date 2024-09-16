@@ -30,7 +30,6 @@ public class UserController extends HttpServlet {
         this.objectMapper.registerModule(javaTimeModule);
     }
 
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");

@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
@@ -62,9 +63,9 @@ public class MessageControllerTest {
     private MessageController messageController;
 
     @BeforeEach
-    void setUp() throws SQLException, JsonProcessingException {
+    void setUp() throws SQLException, JsonProcessingException, ServletException {
         MockitoAnnotations.openMocks(this);
-        messageController.init();
+//        messageController.init();
         initMessageControllerMock();
     }
 

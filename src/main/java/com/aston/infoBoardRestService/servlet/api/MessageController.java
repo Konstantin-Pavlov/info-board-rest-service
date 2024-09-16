@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 @WebServlet(name = "message controller", urlPatterns = {"/api/messages/*"})
 public class MessageController extends HttpServlet {
     private static final Logger logger = Logger.getLogger(MessageController.class.getName());
-    private MessageService messageService;
+    private final MessageService messageService = new MessageServiceImpl();
     private final ObjectMapper objectMapper;
 
     public MessageController() {
@@ -29,11 +29,6 @@ public class MessageController extends HttpServlet {
         JavaTimeModule javaTimeModule = new JavaTimeModule();
         javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
         this.objectMapper.registerModule(javaTimeModule);
-    }
-
-    @Override
-    public void init() {
-        this.messageService = new MessageServiceImpl();
     }
 
     @Override
