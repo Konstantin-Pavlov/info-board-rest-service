@@ -1,5 +1,9 @@
 # Info Board REST Service
 
+- ISSUE: CONTROLLERS TESTS IS NOT WORKING
+- probable cause: perhaps because the service object is initialized in the controller itself. 
+- solution: Move the initialization somewhere else?
+
 ## Overview
 
 The **Info Board REST Service** is a web application designed to manage user information. It provides a RESTful API for user management, allowing users and messages to be created, retrieved, updated, and deleted. The application is built using Java, Maven, and various modern frameworks and libraries.
