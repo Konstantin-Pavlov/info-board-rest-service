@@ -17,14 +17,15 @@ import java.util.logging.Logger;
 
 public class UserDao {
     Logger logger = Logger.getLogger(UserDao.class.getName());
+    private final MessageDao messageDao = new MessageDao();
 
     public List<User> getAllUsers() throws SQLException {
         String query = """
-            SELECT u.id, u.username, u.email,
-                   m.id AS message_id, m.author_id, m.content, m.author_name, m.timestamp
-            FROM users u
-            LEFT JOIN messages m ON u.id = m.author_id
-        """;
+                    SELECT u.id, u.username, u.email,
+                           m.id AS message_id, m.author_id, m.content, m.author_name, m.timestamp
+                    FROM users u
+                    LEFT JOIN messages m ON u.id = m.author_id
+                """;
         Map<Long, User> userMap = new HashMap<>();
         try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query);
@@ -48,12 +49,12 @@ public class UserDao {
 
     public User getUserById(Long id) throws SQLException {
         String query = """
-            SELECT u.id, u.username, u.email,
-                   m.id AS message_id, m.author_id, m.content, m.author_name, m.timestamp
-            FROM users u
-            LEFT JOIN messages m ON u.id = m.author_id
-            WHERE u.id = ?
-        """;
+                    SELECT u.id, u.username, u.email,
+                           m.id AS message_id, m.author_id, m.content, m.author_name, m.timestamp
+                    FROM users u
+                    LEFT JOIN messages m ON u.id = m.author_id
+                    WHERE u.id = ?
+                """;
         User user = null;
         try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -81,12 +82,12 @@ public class UserDao {
 
     public User getUserByEmail(String email) throws SQLException {
         String query = """
-            SELECT u.id, u.username, u.email,
-                   m.id AS message_id, m.author_id, m.content, m.author_name, m.timestamp
-            FROM users u
-            LEFT JOIN messages m ON u.id = m.author_id
-            WHERE u.email = ?
-        """;
+                    SELECT u.id, u.username, u.email,
+                           m.id AS message_id, m.author_id, m.content, m.author_name, m.timestamp
+                    FROM users u
+                    LEFT JOIN messages m ON u.id = m.author_id
+                    WHERE u.email = ?
+                """;
         User user = null;
         try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -111,6 +112,7 @@ public class UserDao {
         return user;
     }
 
+
     public boolean saveUser(User user) throws SQLException {
         if (getUserByEmail(user.getEmail()) == null) {
             String query = "INSERT INTO users (username, email) VALUES (?, ?)";
@@ -120,12 +122,41 @@ public class UserDao {
                 statement.setString(2, user.getEmail());
                 statement.executeUpdate();
                 logger.info("User with email " + user.getEmail() + " has been saved");
+                if (user.getMessages() != null) {
+                    User savedUser = getUserByEmail(user.getEmail());
+                    for (Message message : user.getMessages()) {
+                        message.setAuthorId(savedUser.getId());
+                        messageDao.saveMessage(message);
+                    }
+                }
                 return true;
             }
         } else {
             logger.warning("User with email " + user.getEmail() + " already exists");
             return false;
         }
+    }
+
+    public boolean deleteUser(String email) throws SQLException {
+        User user = getUserByEmail(email);
+        if (user == null) {
+            logger.warning("User with email " + email + " does not exist");
+            return false;
+        }
+        String query = "DELETE FROM users WHERE email = ?";
+        try (Connection connection = DbUtil.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, user.getEmail());
+            statement.executeUpdate();
+            logger.info(String.format("User with id=[%d], email=[%s], name=[%s] has been deleted", user.getId(), user.getEmail(), user.getName()));
+            if (user.getMessages() != null) {
+                for (Message message : user.getMessages()) {
+                    messageDao.deleteMessage(message.getId());
+                    logger.info(String.format("%s has been deleted", message));
+                }
+            }
+        }
+        return true;
     }
 
     private User getUser(ResultSet resultSet) throws SQLException {

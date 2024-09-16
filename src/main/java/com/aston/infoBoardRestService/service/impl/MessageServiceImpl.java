@@ -15,9 +15,9 @@ public class MessageServiceImpl implements MessageService {
     private final MessageMapper messageMapper = MessageMapper.INSTANCE;
 
     @Override
-    public void saveMessage(MessageDto messageDTO) throws SQLException {
+    public boolean saveMessage(MessageDto messageDTO) throws SQLException {
         Message message = messageMapper.toMessage(messageDTO);
-        messageDao.saveMessage(message);
+        return messageDao.saveMessage(message);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void deleteMessage(Long id) throws SQLException {
-        messageDao.deleteMessage(id);
+    public boolean deleteMessage(Long id) throws SQLException {
+        return messageDao.deleteMessage(id);
     }
 }

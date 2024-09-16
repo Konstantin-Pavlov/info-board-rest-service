@@ -1,6 +1,7 @@
 package com.aston.infoBoardRestService.util;
 
 import com.aston.infoBoardRestService.entity.Message;
+import com.aston.infoBoardRestService.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,6 +24,17 @@ public class MessageGenerator {
     );
 
     private static final Random RANDOM = new Random();
+
+    public static Message generateMessageWithUser() {
+        User user = UserGenerator.generateUser();
+        Message message = new Message();
+        message.setAuthorId(user.getId());
+        message.setContent(generateRandomMessage(user.getName()));
+        message.setAuthorName(generateRandomMessage(user.getName()));
+        message.setTimestamp(LocalDateTime.now());
+        message.setUser(user);
+        return message;
+    }
 
     public static Message generateMessage(Long authorId, String authorName) {
         String content = generateRandomMessage(authorName);
