@@ -1,8 +1,8 @@
 package com.aston.infoBoardRestService.servlet;
 
+import com.aston.infoBoardRestService.dao.OrderDao;
 import com.aston.infoBoardRestService.service.OrderService;
 import com.aston.infoBoardRestService.service.impl.OrderServiceImpl;
-import com.aston.infoBoardRestService.servlet.api.OrderController;
 import com.aston.infoBoardRestService.util.DbUtil;
 import com.aston.infoBoardRestService.util.TableUtil;
 import liquibase.Contexts;
@@ -36,7 +36,8 @@ public class servletListener implements ServletContextListener {
             throw new RuntimeException("Failed to initialize Liquibase", e);
         }
 
-        OrderService orderService = new OrderServiceImpl();
+        OrderDao orderDao = new OrderDao();
+        OrderService orderService = new OrderServiceImpl(orderDao);
 //        OrderController orderController = new OrderController(orderService);
         final ServletContext servletContext = servletContextEvent.getServletContext();
         servletContext.setAttribute("orderService", orderService);

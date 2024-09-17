@@ -8,7 +8,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class OrderServiceImpl implements OrderService {
-    private final OrderDao orderDao = new OrderDao();
+    private final OrderDao orderDao;
+
+    public OrderServiceImpl(OrderDao orderDao) {
+        this.orderDao = orderDao;
+    }
+
+
     @Override
     public List<Order> getOrders() throws SQLException {
         return orderDao.getOrders();
