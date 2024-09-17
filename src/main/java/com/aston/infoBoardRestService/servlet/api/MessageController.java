@@ -177,7 +177,7 @@ public class MessageController extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 
@@ -196,7 +196,7 @@ public class MessageController extends HttpServlet {
                     resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     resp.getWriter().print(String.format("Message with id %s not found", param));
                 }
-            }catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 logger.warning(String.format(
                         "Bad request for delete method; should be a number (message id), instead got: %s", pathInfo
                 ));
