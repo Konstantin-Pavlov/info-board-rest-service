@@ -52,6 +52,7 @@ messageService.getAllMessages();
 Actually, there were zero interactions with this mock.
 * */
 
+// todo - fix
 @ExtendWith(MockitoExtension.class)
 public class MessageControllerTest {
     private final MessageMapper messageMapper = MessageMapper.INSTANCE;
