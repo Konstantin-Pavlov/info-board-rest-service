@@ -4,6 +4,7 @@ import com.aston.infoBoardRestService.entity.Order;
 import com.aston.infoBoardRestService.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -22,21 +23,15 @@ public class OrderController extends HttpServlet {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public void init() throws ServletException {
-        super.init();
+    public void init(ServletConfig servletConfig) throws ServletException {
+        super.init(servletConfig);
         final Object o = getServletContext().getAttribute("orderService");
         this.orderService = (OrderService) o;
     }
 
-    //     Constructor injection
-//    public OrderController(OrderService orderService) {
-//        this.orderService = orderService;
-//    }
-
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse response)
             throws ServletException, IOException {
-//        req.getRequestDispatcher("/WEB-INF/view/index.jsp").forward(req, response);
         try {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
@@ -54,6 +49,6 @@ public class OrderController extends HttpServlet {
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write("{\"error\": \"An error occurred\"}");
         }
-
     }
+
 }
