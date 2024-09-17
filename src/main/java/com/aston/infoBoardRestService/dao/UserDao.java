@@ -2,6 +2,7 @@ package com.aston.infoBoardRestService.dao;
 
 import com.aston.infoBoardRestService.entity.Message;
 import com.aston.infoBoardRestService.entity.User;
+import com.aston.infoBoardRestService.exception.UserNotFoundException;
 import com.aston.infoBoardRestService.util.DbUtil;
 
 import java.sql.Connection;
@@ -81,7 +82,7 @@ public class UserDao {
     }
 
 
-    public User getUserByEmail(String email) throws SQLException {
+    public Optional<User> getUserByEmail(String email) throws SQLException {
         String query = """
                     SELECT u.id, u.username, u.email,
                            m.id AS message_id, m.author_id, m.content, m.author_name, m.timestamp
@@ -110,7 +111,7 @@ public class UserDao {
         } else {
             logger.warning("User with email " + email + " does not exist");
         }
-        return user;
+        return Optional.ofNullable(user);
     }
 
 
@@ -124,7 +125,8 @@ public class UserDao {
                 statement.executeUpdate();
                 logger.info("User with email " + user.getEmail() + " has been saved");
                 if (user.getMessages() != null) {
-                    User savedUser = getUserByEmail(user.getEmail());
+                    User savedUser = getUserByEmail(user.getEmail()).orElseThrow(
+                            () -> new UserNotFoundException("Can't find user with email: " + user.getEmail()));
                     for (Message message : user.getMessages()) {
                         message.setAuthorId(savedUser.getId());
                         messageDao.saveMessage(message);
@@ -138,8 +140,10 @@ public class UserDao {
         }
     }
 
+    // todo - fix checking if user not existing, now return void, catch exception and so on
     public boolean deleteUser(String email) throws SQLException {
-        User user = getUserByEmail(email);
+        User user =  getUserByEmail(email).orElseThrow(
+                () -> new UserNotFoundException("Can't find user with email: " + email));
         if (user == null) {
             logger.warning("User with email " + email + " does not exist");
             return false;

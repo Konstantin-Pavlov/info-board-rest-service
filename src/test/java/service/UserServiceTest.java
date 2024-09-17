@@ -1,6 +1,7 @@
 package service;
 
 import com.aston.infoBoardRestService.dto.UserDto;
+import com.aston.infoBoardRestService.exception.UserNotFoundException;
 import com.aston.infoBoardRestService.service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +15,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -90,17 +91,33 @@ public class UserServiceTest {
     }
 
     @Test
-    @DisplayName("test 3: getting not existing user by email")
-    public void testGetUserAndThrowException() throws Exception {
+    @DisplayName("test 4: getting not existing user by email")
+    public void testGetUserByEmailAndThrowException() throws Exception {
         UserDto newUser = new UserDto();
         newUser.setEmail("jane.doe@example.com");
         newUser.setName("Jane Doe");
 
-        when(userService.getUserByEmail(newUser.getEmail())).thenReturn(null);
+        when(userService.getUserByEmail(newUser.getEmail()))
+                .thenThrow(new UserNotFoundException("Can't find user with email: " + newUser.getEmail()));
 
-        assertNull(userService.getUserByEmail(newUser.getEmail()));
+        assertThrows(UserNotFoundException.class, () -> userService.getUserByEmail(newUser.getEmail()));
 
         verify(userService, times(1)).getUserByEmail(newUser.getEmail());
+    }
+
+    @Test
+    @DisplayName("test 5: getting not existing user by id")
+    public void testGetUserByIdAndThrowException() throws Exception {
+        UserDto newUser = new UserDto();
+        newUser.setId(123456L);
+        newUser.setEmail("jane.doe@example.com");
+        newUser.setName("Jane Doe");
+
+        when(userService.getUserById(newUser.getId())).thenThrow(new UserNotFoundException("Can't find user with userId: " + newUser.getId()));
+
+        assertThrows(UserNotFoundException.class, () -> userService.getUserById(newUser.getId()));
+
+        verify(userService, times(1)).getUserById(newUser.getId());
     }
 
 }

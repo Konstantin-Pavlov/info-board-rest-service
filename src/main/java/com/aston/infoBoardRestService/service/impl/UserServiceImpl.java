@@ -22,7 +22,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserByEmail(String email) throws SQLException {
-        return userMapper.toUserDTO(userDao.getUserByEmail(email));
+        User user = userDao.getUserByEmail(email).orElseThrow(
+                () -> new UserNotFoundException("Can't find user with email: " + email)
+        );
+        return userMapper.toUserDTO(user);
     }
 
     @Override

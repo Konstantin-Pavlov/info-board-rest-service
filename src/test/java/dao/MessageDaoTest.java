@@ -4,6 +4,7 @@ import com.aston.infoBoardRestService.dao.MessageDao;
 import com.aston.infoBoardRestService.dao.UserDao;
 import com.aston.infoBoardRestService.entity.Message;
 import com.aston.infoBoardRestService.entity.User;
+import com.aston.infoBoardRestService.exception.UserNotFoundException;
 import com.aston.infoBoardRestService.util.TestUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,7 +30,11 @@ public class MessageDaoTest {
 
     @BeforeEach
     public void beforeEach() throws SQLException {
-        dbUser = userDao.getUserByEmail(userWithMessages.getEmail());
+        dbUser = userDao
+                .getUserByEmail(userWithMessages.getEmail())
+                .orElseThrow(
+                        () -> new UserNotFoundException("Can't find user with email: " + userWithMessages.getEmail())
+                );
         dbUser.setMessages(new ArrayList<>(2));
         dbUser.getMessages().add(TestUtil.getNewMessage(dbUser));
         dbUser.getMessages().add(TestUtil.getNewMessage(dbUser));

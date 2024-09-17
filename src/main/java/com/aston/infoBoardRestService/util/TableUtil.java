@@ -3,6 +3,7 @@ package com.aston.infoBoardRestService.util;
 import com.aston.infoBoardRestService.dao.MessageDao;
 import com.aston.infoBoardRestService.dao.UserDao;
 import com.aston.infoBoardRestService.entity.User;
+import com.aston.infoBoardRestService.exception.UserNotFoundException;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -92,7 +93,8 @@ public class TableUtil {
     // java.sql.Date.valueOf(java.time.LocalDate.now()
     public static String insertSampleMessages() {
         try {
-            User user = userDao.getUserByEmail(USER.getEmail());
+            User user = userDao.getUserByEmail(USER.getEmail()).orElseThrow(
+                    () -> new UserNotFoundException("Can't find user with email: " + USER.getEmail()));
             messageDao.saveMessage(MessageGenerator.generateMessage(user.getId(), user.getName()));
             return "Sample message inserted successfully.";
         } catch (SQLException e) {

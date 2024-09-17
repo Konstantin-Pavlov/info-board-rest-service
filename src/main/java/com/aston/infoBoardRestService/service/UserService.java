@@ -10,7 +10,7 @@ public interface UserService {
 
     UserDto getUserByEmail(String name) throws SQLException;
 
-    List<UserDto> getAllUsers() throws SQLException; // New method
+    List<UserDto> getAllUsers() throws SQLException;
 
     UserDto getUserById(Long id) throws SQLException;
 

@@ -4,6 +4,7 @@ import com.aston.infoBoardRestService.dao.MessageDao;
 import com.aston.infoBoardRestService.dao.UserDao;
 import com.aston.infoBoardRestService.entity.Message;
 import com.aston.infoBoardRestService.entity.User;
+import com.aston.infoBoardRestService.exception.UserNotFoundException;
 import com.aston.infoBoardRestService.util.TestUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -63,7 +64,8 @@ public class UserDaoTest {
     @Test
     @DisplayName("check if user and their messages has been deleted")
     public void delCheck() throws SQLException {
-        User dbUser = userDao.getUserByEmail(userWithMessages.getEmail()); // get id's
+        User dbUser = userDao.getUserByEmail(userWithMessages.getEmail()).orElseThrow(
+                () -> new UserNotFoundException("Can't find user with email: " + userWithMessages.getEmail())); // get id's
 
         Assertions.assertTrue(userDao.deleteUser(userWithMessages.getEmail()));
 
