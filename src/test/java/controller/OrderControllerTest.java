@@ -42,14 +42,13 @@ public class OrderControllerTest {
     private PrintWriter writer;
     @Mock
     protected ServletContext servletContext;
-//    @InjectMocks
+    @InjectMocks
     private OrderController orderController;
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
-        orderController = Mockito.spy(new OrderController());
-//        MockitoAnnotations.openMocks(this);
+        MockitoAnnotations.openMocks(this);
         when(response.getWriter()).thenReturn(writer);
         lenient().when(servletContext.getAttribute("orderService")).thenReturn(orderService);
         Mockito.doReturn(servletContext).when(orderController).getServletContext();
