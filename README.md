@@ -1,6 +1,10 @@
 # Info Board REST Service
 
-how to launch: install tomcat 8.5.97 go to configuration:
+<details>
+  <summary><strong>how to launch:</strong></summary>
+
+
+install tomcat 8.5.97 go to configuration:
 <br> ![image](https://github.com/user-attachments/assets/142fb365-f56a-40fe-a6d7-233a99170d32)
 <br> choose tomcat server -> local
 <br>![image](https://github.com/user-attachments/assets/b2a73286-ecc7-4518-9cf6-98cd753a66b9)
@@ -10,7 +14,10 @@ how to launch: install tomcat 8.5.97 go to configuration:
 <br>![image](https://github.com/user-attachments/assets/0c23847a-b2fd-4d6b-a342-8ce65d86190c)
 <br> from application context only '/' remains
 <br>![image](https://github.com/user-attachments/assets/98729444-9d9d-47e6-ab94-3ec38fa7a008)
+<br> start docker and launch compose.yaml
+<br>![image](https://github.com/user-attachments/assets/496a0f6c-3e8f-4d82-b1aa-400ef51c9cc3)
 
+  </details>
 
 
 
