@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -86,6 +87,20 @@ public class UserServiceTest {
         assertTrue(userService.saveUser(newUser));
 
         verify(userService, times(1)).saveUser(newUser);
+    }
+
+    @Test
+    @DisplayName("test 3: getting not existing user by email")
+    public void testGetUserAndThrowException() throws Exception {
+        UserDto newUser = new UserDto();
+        newUser.setEmail("jane.doe@example.com");
+        newUser.setName("Jane Doe");
+
+        when(userService.getUserByEmail(newUser.getEmail())).thenReturn(null);
+
+        assertNull(userService.getUserByEmail(newUser.getEmail()));
+
+        verify(userService, times(1)).getUserByEmail(newUser.getEmail());
     }
 
 }
