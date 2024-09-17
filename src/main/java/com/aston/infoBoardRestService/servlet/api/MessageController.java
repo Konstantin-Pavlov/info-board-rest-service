@@ -7,10 +7,12 @@ import com.aston.infoBoardRestService.util.LocalDateTimeSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -110,6 +112,111 @@ public class MessageController extends HttpServlet {
                 resp.getWriter().flush();
                 resp.getWriter().close();
             }
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        // Read the request body
+        StringBuilder jsonBuffer = new StringBuilder();
+        String line;
+        try (BufferedReader reader = request.getReader()) {
+            while ((line = reader.readLine()) != null) {
+                jsonBuffer.append(line);
+            }
+        }
+
+        // Parse the JSON input
+        String jsonString = jsonBuffer.toString();
+        MessageDto messageDto;
+        try {
+            messageDto = objectMapper.readValue(jsonString, MessageDto.class);
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"message\": \"Invalid JSON format\"}");
+            return;
+        }
+
+        // Validate the input
+        if (messageDto.getAuthorId() == null
+                || messageDto.getContent() == null
+                || messageDto.getAuthorName() == null) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"message\": \"Author id, author name, and content are required\"}");
+            return;
+        }
+
+        // Save the message
+        boolean isSaved;
+        try {
+            messageDto.setTimestamp(LocalDateTime.now());
+            isSaved = messageService.saveMessage(messageDto);
+        } catch (SQLException e) {
+            logger.warning(String.format("Error while saving message: %s", messageDto));
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"message\": \"Error saving message: " + e.getMessage() + "\"}");
+            return;
+        }
+
+        // Respond to the client
+        if (isSaved) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write("{\"message\": \"message saved successfully\"}");
+        } else {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"message\": \"Failed to save message\"}");
+        }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doPut(req, resp);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+
+        String pathInfo = req.getPathInfo(); // Get the path info after /message-servlet
+        if (pathInfo != null && pathInfo.length() > 1) {
+            String param = pathInfo.substring(1); // Remove the leading "/"
+            try {
+                Long messageId = Long.parseLong(param);
+                // Assume it's an email
+                if (messageService.deleteMessage(messageId)) {
+                    logger.info(String.format("message with id %s deleted successfully", param));
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    resp.getWriter().print(String.format("message with id %s deleted successfully", param));
+                } else {
+                    logger.warning(String.format("Message with id %s not found", param));
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    resp.getWriter().print(String.format("Message with id %s not found", param));
+                }
+            }catch (NumberFormatException e){
+                logger.warning(String.format(
+                        "Bad request for delete method; should be a number (message id), instead got: %s", pathInfo
+                ));
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write(String.format(
+                        "Bad request for delete method; should be a number (message id), instead got: %s", pathInfo
+                ));
+            } catch (SQLException e) {
+                logger.warning(String.format("error while getting message: %s", e.getMessage()));
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                resp.getWriter().print("{\"message\": \"Error retrieving message: " + e.getMessage() + "\"}");
+            } catch (Exception e) {
+                logger.warning(String.format("exception: %s", e.getMessage()));
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write(String.format("exception: %s", e.getMessage()));
+            }
+        } else {
+            logger.warning(String.format("empty request for delete method: %s", pathInfo));
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write(String.format("empty or bad request for delete method: <%s>. Should provide id for message you want to delete", pathInfo));
         }
     }
 }

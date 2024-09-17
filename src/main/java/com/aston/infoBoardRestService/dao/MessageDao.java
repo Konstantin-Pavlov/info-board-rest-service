@@ -29,6 +29,7 @@ public class MessageDao {
             logger.info(String.format("Message with author name %s and content <%s> has been saved", message.getAuthorName(), message.getContent()));
             return true;
         } catch (SQLException e) {
+            logger.warning(String.format("Failed to save message: %s", e.getMessage()));
             return false;
         }
     }

@@ -64,4 +64,16 @@ public class MessageDto {
     public void setUser(User user) {
         this.user = user;
     }
+
+    @Override
+    public String toString() {
+        return "MessageDto{" +
+                "id=" + id +
+                ", authorId=" + authorId +
+                ", content='" + content + '\'' +
+                ", authorName='" + authorName + '\'' +
+                ", timestamp=" + timestamp +
+                ", user=" + user +
+                '}';
+    }
 }
