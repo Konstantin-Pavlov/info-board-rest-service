@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public class UserDao {
@@ -47,7 +48,7 @@ public class UserDao {
         return new ArrayList<>(userMap.values());
     }
 
-    public User getUserById(Long id) throws SQLException {
+    public Optional<User> getUserById(Long id) throws SQLException {
         String query = """
                     SELECT u.id, u.username, u.email,
                            m.id AS message_id, m.author_id, m.content, m.author_name, m.timestamp
@@ -76,7 +77,7 @@ public class UserDao {
         } else {
             logger.warning("User with id " + id + " does not exist");
         }
-        return user;
+        return Optional.ofNullable(user);
     }
 
 

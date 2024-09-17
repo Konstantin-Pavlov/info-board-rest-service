@@ -1,6 +1,7 @@
 package com.aston.infoBoardRestService.servlet.api;
 
 import com.aston.infoBoardRestService.dto.UserDto;
+import com.aston.infoBoardRestService.exception.UserNotFoundException;
 import com.aston.infoBoardRestService.service.UserService;
 import com.aston.infoBoardRestService.service.impl.UserServiceImpl;
 import com.aston.infoBoardRestService.util.LocalDateTimeSerializer;
@@ -32,9 +33,8 @@ public class UserController extends HttpServlet {
         this.objectMapper.registerModule(javaTimeModule);
     }
 
-
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 
@@ -66,6 +66,10 @@ public class UserController extends HttpServlet {
                         resp.getWriter().print(String.format("User with id %s not found", id));
                     }
                 }
+            } catch (UserNotFoundException e) {
+                logger.warning(String.format("error: %s", e.getMessage()));
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                resp.getWriter().print("{\"message\": \"Error retrieving user: " + e.getMessage() + "\"}");
             } catch (SQLException e) {
                 logger.warning(String.format("error while getting user: %s", e.getMessage()));
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

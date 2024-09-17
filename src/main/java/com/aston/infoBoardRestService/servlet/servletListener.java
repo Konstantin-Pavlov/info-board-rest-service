@@ -1,5 +1,8 @@
 package com.aston.infoBoardRestService.servlet;
 
+import com.aston.infoBoardRestService.dao.OrderDao;
+import com.aston.infoBoardRestService.service.OrderService;
+import com.aston.infoBoardRestService.service.impl.OrderServiceImpl;
 import com.aston.infoBoardRestService.util.DbUtil;
 import com.aston.infoBoardRestService.util.TableUtil;
 import liquibase.Contexts;
@@ -12,6 +15,7 @@ import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.resource.ResourceAccessor;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
@@ -20,17 +24,24 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 
 @WebListener
-public class LiquibaseServletListener implements ServletContextListener {
+public class servletListener implements ServletContextListener {
     private final Logger log = Logger.getLogger(this.getClass().getName());
 
     @Override
-    public void contextInitialized(ServletContextEvent sce) {
+    public void contextInitialized(ServletContextEvent servletContextEvent) {
         try {
             runLiquibase();
         } catch (Exception e) {
             log.severe(e.getMessage());
             throw new RuntimeException("Failed to initialize Liquibase", e);
         }
+
+        OrderDao orderDao = new OrderDao();
+        OrderService orderService = new OrderServiceImpl(orderDao);
+//        OrderController orderController = new OrderController(orderService);
+        final ServletContext servletContext = servletContextEvent.getServletContext();
+        servletContext.setAttribute("orderService", orderService);
+
     }
 
     @Override
