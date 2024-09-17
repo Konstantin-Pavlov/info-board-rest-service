@@ -149,7 +149,44 @@ public class UserController extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doDelete(req, resp);
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+
+        String pathInfo = req.getPathInfo(); // Get the path info after /user-servlet
+        if (pathInfo != null && pathInfo.length() > 1) {
+            String param = pathInfo.substring(1); // Remove the leading "/"
+            try {
+                if (param.contains("@")) {
+                    // Assume it's an email
+                    if (userService.deleteUser(param)) {
+                        logger.warning(String.format("User with email %s and their messages deleted successfully", param));
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        resp.getWriter().print(String.format("User with email %s and their messages deleted successfully", param));
+                    } else {
+                        logger.warning("User with email " + param + " not found");
+                        resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                        resp.getWriter().print(String.format("User with email %s not found", param));
+                    }
+                } else {
+                    logger.warning(String.format("bad request for delete method: %s", pathInfo));
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    resp.getWriter().write(String.format("bad request for delete method: %s", pathInfo));
+                }
+
+            } catch (SQLException e) {
+                logger.warning(String.format("error while getting user: %s", e.getMessage()));
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                resp.getWriter().print("{\"message\": \"Error retrieving user: " + e.getMessage() + "\"}");
+            } catch (Exception e) {
+                logger.warning(String.format("exception: %s", e.getMessage()));
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write(String.format("exception: %s", e.getMessage()));
+            }
+        } else {
+            logger.warning(String.format("empty request for delete method: %s", pathInfo));
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write(String.format("empty or bad request for delete method: <%s>. Should provide email for user you want to delete", pathInfo));
+        }
     }
 
 

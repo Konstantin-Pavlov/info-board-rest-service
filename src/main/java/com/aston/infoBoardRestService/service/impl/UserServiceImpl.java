@@ -34,4 +34,9 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserById(Long id) throws SQLException {
         return userMapper.toUserDTO(userDao.getUserById(id));
     }
+
+    @Override
+    public boolean deleteUser(String email) throws SQLException {
+        return userDao.deleteUser(email);
+    }
 }
