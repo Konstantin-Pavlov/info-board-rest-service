@@ -1,15 +1,15 @@
 # Info Board REST Service
 
-how to launch:
-![image](https://github.com/user-attachments/assets/142fb365-f56a-40fe-a6d7-233a99170d32)
-
-![image](https://github.com/user-attachments/assets/b2a73286-ecc7-4518-9cf6-98cd753a66b9)
-
-![image](https://github.com/user-attachments/assets/0cfa8181-9092-4dc8-8002-47f748611e3f)
-
-![image](https://github.com/user-attachments/assets/0c23847a-b2fd-4d6b-a342-8ce65d86190c)
-
-![image](https://github.com/user-attachments/assets/98729444-9d9d-47e6-ab94-3ec38fa7a008)
+how to launch: install tomcat 8.5.97 go to configuration:
+<br> ![image](https://github.com/user-attachments/assets/142fb365-f56a-40fe-a6d7-233a99170d32)
+<br> choose tomcat server -> local
+<br>![image](https://github.com/user-attachments/assets/b2a73286-ecc7-4518-9cf6-98cd753a66b9)
+<br> add artifact
+<br>![image](https://github.com/user-attachments/assets/0cfa8181-9092-4dc8-8002-47f748611e3f)
+<br> choose exploaded
+<br>![image](https://github.com/user-attachments/assets/0c23847a-b2fd-4d6b-a342-8ce65d86190c)
+<br> from application context only '/' remains
+<br>![image](https://github.com/user-attachments/assets/98729444-9d9d-47e6-ab94-3ec38fa7a008)
 
 
 
