@@ -2,11 +2,14 @@ package com.aston.infoBoardRestService.service.impl;
 
 import com.aston.infoBoardRestService.dao.UserDao;
 import com.aston.infoBoardRestService.dto.UserDto;
+import com.aston.infoBoardRestService.entity.User;
+import com.aston.infoBoardRestService.exception.UserNotFoundException;
 import com.aston.infoBoardRestService.mapper.UserMapper;
 import com.aston.infoBoardRestService.service.UserService;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public class UserServiceImpl implements UserService {
     private final UserDao userDao = new UserDao();
@@ -31,7 +34,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUserById(Long id) throws SQLException {
-        return userMapper.toUserDTO(userDao.getUserById(id));
+    public UserDto getUserById(Long userId) throws SQLException {
+        User user = userDao.getUserById(userId).orElseThrow(
+                () -> new UserNotFoundException("Can't find user with userId: " + userId)
+        );
+        return userMapper.toUserDTO(user);
     }
 }

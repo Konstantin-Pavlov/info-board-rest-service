@@ -1,6 +1,7 @@
 package com.aston.infoBoardRestService.servlet;
 
 import com.aston.infoBoardRestService.dto.UserDto;
+import com.aston.infoBoardRestService.exception.UserNotFoundException;
 import com.aston.infoBoardRestService.service.UserService;
 import com.aston.infoBoardRestService.service.impl.UserServiceImpl;
 
@@ -12,10 +13,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Logger;
 
 @WebServlet(name = "user servlet", urlPatterns = {"/users/*"})
 public class UserServlet extends HttpServlet {
     private final UserService userService = new UserServiceImpl();
+    private final Logger logger = Logger.getLogger(UserServlet.class.getName());
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -45,9 +48,14 @@ public class UserServlet extends HttpServlet {
                         out.println("<p>No user found with ID: " + id + "</p>");
                     }
                 }
+            } catch (UserNotFoundException e) {
+                logger.warning(e.getMessage());
+                out.println(String.format("<p> Error retrieving user <b>%s</b>", e.getMessage()));
             } catch (SQLException e) {
+                logger.warning(e.getMessage());
                 out.println("<p>Error retrieving user: " + e.getMessage() + "</p>");
             } catch (NumberFormatException e) {
+                logger.warning(e.getMessage());
                 out.println("<p>Invalid ID format: " + param + "</p>");
             }
         } else {

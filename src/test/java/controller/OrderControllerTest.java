@@ -18,9 +18,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -82,6 +84,16 @@ public class OrderControllerTest {
         verify(response).setContentType("application/json");
         verify(response).setCharacterEncoding("UTF-8");
         verify(response).setStatus(HttpServletResponse.SC_OK);
+
+
+//        StringWriter stringWriter = new StringWriter();
+//        PrintWriter printWriter = new PrintWriter(stringWriter);
+//        when(response.getWriter()).thenReturn(printWriter);
+//
+//        orderController.doGet(request, response);
+//
+//        verify(response).setContentType("text/plain");
+//        assertEquals("Hello, World!\n", stringWriter.toString());
 
     }
 
