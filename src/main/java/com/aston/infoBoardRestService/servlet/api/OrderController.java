@@ -2,7 +2,6 @@ package com.aston.infoBoardRestService.servlet.api;
 
 import com.aston.infoBoardRestService.entity.Order;
 import com.aston.infoBoardRestService.service.OrderService;
-import com.aston.infoBoardRestService.service.impl.OrderServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
@@ -19,7 +18,7 @@ import java.util.logging.Logger;
 @WebServlet(name = "order controller", value = "/api/orders/*")
 public class OrderController extends HttpServlet {
     private static final Logger logger = Logger.getLogger(MessageController.class.getName());
-    private  OrderService orderService;
+    private OrderService orderService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
