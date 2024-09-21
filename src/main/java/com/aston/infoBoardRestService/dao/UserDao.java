@@ -116,7 +116,7 @@ public class UserDao {
 
 
     public boolean saveUser(User user) throws SQLException {
-        if (getUserByEmail(user.getEmail()) == null) {
+        if (getUserByEmail(user.getEmail()).isEmpty()) {
             String query = "INSERT INTO users (username, email) VALUES (?, ?)";
             try (Connection connection = DbUtil.getInstance().getConnection();
                  PreparedStatement statement = connection.prepareStatement(query)) {

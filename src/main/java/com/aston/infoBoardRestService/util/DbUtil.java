@@ -34,11 +34,11 @@ public final class DbUtil {
         }
     }
 
-    private static final String URL = properties.getProperty("db.url");
-    private static final String USER = properties.getProperty("db.username");
-    private static final String PASSWORD = properties.getProperty("db.password");
-    private static final String DRIVER = properties.getProperty("db.driver");
-    private static final String LIQUIBASE_CHANGELOG_PATH = properties.getProperty("liquibase.change_log_file_path");
+    private static final String URL = properties.getProperty("liquibase.url");
+    private static final String USER = properties.getProperty("liquibase.username");
+    private static final String PASSWORD = properties.getProperty("liquibase.password");
+    private static final String DRIVER = properties.getProperty("liquibase.driver");
+    private static final String LIQUIBASE_CHANGELOG_PATH = properties.getProperty("liquibase.changeLogFile");
 
     // Singleton instance
     private static DbUtil instance;

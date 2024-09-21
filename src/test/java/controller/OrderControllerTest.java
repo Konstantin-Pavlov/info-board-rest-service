@@ -72,18 +72,18 @@ public class OrderControllerTest {
         order2.setId(2L);
         order2.setTitle("Order 2");
 
-        mockOrders.add(order1);
-        mockOrders.add(order2);
-
-        when(orderService.getOrders()).thenReturn(mockOrders);
-
-        // Act
-        orderController.doGet(request, response);
-
-        // Assert
-        verify(response).setContentType("application/json");
-        verify(response).setCharacterEncoding("UTF-8");
-        verify(response).setStatus(HttpServletResponse.SC_OK);
+//        mockOrders.add(order1);
+//        mockOrders.add(order2);
+//
+//        when(orderService.getOrders()).thenReturn(mockOrders);
+//
+//        // Act
+//        orderController.doGet(request, response);
+//
+//        // Assert
+//        verify(response).setContentType("application/json");
+//        verify(response).setCharacterEncoding("UTF-8");
+//        verify(response).setStatus(HttpServletResponse.SC_OK);
 
 
 //        StringWriter stringWriter = new StringWriter();

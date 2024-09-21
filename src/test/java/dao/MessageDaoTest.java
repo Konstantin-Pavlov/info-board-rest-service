@@ -6,6 +6,7 @@ import com.aston.infoBoardRestService.entity.Message;
 import com.aston.infoBoardRestService.entity.User;
 import com.aston.infoBoardRestService.exception.UserNotFoundException;
 import com.aston.infoBoardRestService.util.TestUtil;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +15,10 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 public class MessageDaoTest {
+    private static final Logger logger = Logger.getLogger(MessageDaoTest.class.getName());
     private static final UserDao userDao = new UserDao();
     private static final MessageDao messageDao = new MessageDao();
     private static User userWithMessages;
@@ -38,6 +41,15 @@ public class MessageDaoTest {
         dbUser.setMessages(new ArrayList<>(2));
         dbUser.getMessages().add(TestUtil.getNewMessage(dbUser));
         dbUser.getMessages().add(TestUtil.getNewMessage(dbUser));
+    }
+
+    @AfterAll
+    public static void tearDown() {
+        try {
+            userDao.deleteUser(dbUser.getEmail());
+        } catch (SQLException e) {
+            logger.warning(e.getMessage());
+        }
     }
 
     @Test
