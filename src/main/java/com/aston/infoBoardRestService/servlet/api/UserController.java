@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.logging.Logger;
 
-@WebServlet(name = "user controller", urlPatterns = {"/info-board/api/users/*"})
+@WebServlet(name = "user controller", urlPatterns = {"/api/users/*"})
 public class UserController extends HttpServlet {
     private static final Logger logger = Logger.getLogger(MessageController.class.getName());
     private final UserService userService = new UserServiceImpl();

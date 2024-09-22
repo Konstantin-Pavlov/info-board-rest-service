@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@WebServlet(name = "message servlet", value = "/info-board/messages")
+@WebServlet(name = "message servlet", value = "/messages")
 public class MessageServlet extends HttpServlet {
 
     private final MessageService messageService = new MessageServiceImpl();
@@ -60,7 +60,7 @@ public class MessageServlet extends HttpServlet {
 
         out.println("<br>");
 
-        out.println("<br>  <a href=\"http://localhost:8080/\"\">homepage</a> <br>\n");
+        out.println("<br>  <a href=\"http://localhost:8080/info-board\"\">homepage</a> <br>\n");
         out.println("</html>");
     }
 

@@ -16,7 +16,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Logger;
 
-@WebServlet(name = "user servlet", urlPatterns = {"/info-board/users/*"})
+@WebServlet(name = "user servlet", urlPatterns = {"/users/*"})
 public class UserServlet extends HttpServlet {
     private final UserService userService = new UserServiceImpl();
     private final Logger logger = Logger.getLogger(UserServlet.class.getName());
@@ -74,7 +74,7 @@ public class UserServlet extends HttpServlet {
         }
 
         out.println("<br>");
-        out.println("<br>  <a href=\"http://localhost:8080/\"\">homepage</a> <br>\n");
+        out.println("<br>  <a href=\"http://localhost:8080/info-board\"\">homepage</a> <br>\n");
         out.println("</html>");
     }
 

@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "FirstServlet", value = "/info-board/hello-servlet")
+@WebServlet(name = "FirstServlet", value = "/hello-servlet")
 public class FirstServlet extends HttpServlet {
     private String message;
 
