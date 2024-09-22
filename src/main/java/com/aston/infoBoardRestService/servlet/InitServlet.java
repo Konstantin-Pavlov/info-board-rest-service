@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-@WebServlet("/init")
+@WebServlet("/info-board/init")
 public class InitServlet extends HttpServlet {
 
     @Override

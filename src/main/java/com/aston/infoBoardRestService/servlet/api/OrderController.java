@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebServlet(name = "order controller", value = "/api/orders/*")
+@WebServlet(name = "order controller", value = "/info-board/api/orders/*")
 public class OrderController extends HttpServlet {
     private static final Logger logger = Logger.getLogger(MessageController.class.getName());
     private OrderService orderService;

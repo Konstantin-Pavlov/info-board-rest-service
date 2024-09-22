@@ -18,7 +18,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet(name = "messageBoardServlet", value = "/message-board")
+@WebServlet(name = "messageBoardServlet", value = "/info-board/message-board")
 public class MessageBoardServlet extends HttpServlet {
     private final MessageService messageService = new MessageServiceImpl();
     private final UserService userService = new UserServiceImpl();

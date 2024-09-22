@@ -37,7 +37,7 @@
     %>
     <%= "hello jsp\n" %><br>
     <%= "current time: " + message %><br>
-    <br> <a href="http://localhost:8080/">homepage</a> <br>
+    <a href="http://localhost:8080/info-board">Homepage</a>
 
 </p>
 

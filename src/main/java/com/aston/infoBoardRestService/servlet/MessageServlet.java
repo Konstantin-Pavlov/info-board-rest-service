@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@WebServlet(name = "message servlet", value = "/messages")
+@WebServlet(name = "message servlet", value = "/info-board/messages")
 public class MessageServlet extends HttpServlet {
 
     private final MessageService messageService = new MessageServiceImpl();

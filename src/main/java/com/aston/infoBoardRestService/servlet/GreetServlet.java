@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "GreetServlet", value = "/GreetServlet")
+@WebServlet(name = "GreetServlet", value = "/info-board/GreetServlet")
 public class GreetServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -41,10 +41,10 @@ public class GreetServlet extends HttpServlet {
 
                 }\
                 </code></pre>""");
-        out.println("<p>example of url with params: http://localhost:8080/GreetServlet?name=Tom&surname=Hanks</p>");
+        out.println("<p>example of url with params: http://localhost:8080/info-board/GreetServlet?name=Tom&surname=Hanks</p>");
         out.println("</body>");
         out.println("</html>");
-        out.println("<br>  <a href=\"http://localhost:8080/\">homepage</a> <br>\n");
+        out.println("<br>  <a href=\"http://localhost:8080/info-board/\">homepage</a> <br>\n");
     }
 
     @Override

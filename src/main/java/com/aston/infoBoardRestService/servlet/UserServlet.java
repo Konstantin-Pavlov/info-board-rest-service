@@ -16,7 +16,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Logger;
 
-@WebServlet(name = "user servlet", urlPatterns = {"/users/*"})
+@WebServlet(name = "user servlet", urlPatterns = {"/info-board/users/*"})
 public class UserServlet extends HttpServlet {
     private final UserService userService = new UserServiceImpl();
     private final Logger logger = Logger.getLogger(UserServlet.class.getName());

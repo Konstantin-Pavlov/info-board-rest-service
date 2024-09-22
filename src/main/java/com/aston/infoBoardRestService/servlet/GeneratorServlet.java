@@ -15,7 +15,7 @@ import java.sql.SQLException;
 import java.util.Random;
 import java.util.logging.Logger;
 
-@WebServlet(name = "generator servlet", urlPatterns = {"/generator"})
+@WebServlet(name = "generator servlet", urlPatterns = {"/info-board/generator"})
 public class GeneratorServlet  extends HttpServlet {
     private final Random random = new Random();
     private final UserSaver userSaver = new UserSaver();

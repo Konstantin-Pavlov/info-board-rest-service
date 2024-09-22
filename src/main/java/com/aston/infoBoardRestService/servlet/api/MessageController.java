@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebServlet(name = "message controller", urlPatterns = {"/api/messages/*"})
+@WebServlet(name = "message controller", urlPatterns = {"/info-board/api/messages/*"})
 public class MessageController extends HttpServlet {
     private static final Logger logger = Logger.getLogger(MessageController.class.getName());
     private final MessageService messageService = new MessageServiceImpl();

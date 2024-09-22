@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "FirstServlet", value = "/hello-servlet")
+@WebServlet(name = "FirstServlet", value = "/info-board/hello-servlet")
 public class FirstServlet extends HttpServlet {
     private String message;
 
@@ -31,7 +31,7 @@ public class FirstServlet extends HttpServlet {
         out.printf("<h1>%s</h1>%n", message);
         out.println("<h2>" + "wow" + " </h2>");
         out.println("</body></html>");
-        out.println("<br>  <a href=\"http://localhost:8080/\">homepage</a> <br>\n");
+        out.println("<br>  <a href=\"http://localhost:8080/info-board\">homepage</a> <br>\n");
 
         // in this case we'll find ourselves at google start page (url in browser is https://www.google.com/)
 //        response.sendRedirect("https://www.google.com/");
