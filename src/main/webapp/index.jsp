@@ -9,7 +9,7 @@
     <h1>Home Page</h1>
 
     <br> <a href="http://localhost:8080/init">Reload InitServlet</a> <br>
-    <br> <a href="http://localhost:8080/hello-servlet">Visit hello-servlet</a> <br>
+    <br> <a href="http://localhost:8080/info-board/hello-servlet">Visit hello-servlet</a> <br>
     <br> <a href="http://localhost:8080/firstJsp.jsp">Visit firstJsp to see current time</a> <br>
     <br> <a href="http://localhost:8080/greeting.jsp?name=guest">Visit greeting page</a> <br>
     <br> <a href="http://localhost:8080/GreetServlet?name=Tom&surname=Hanks">Visit greet servlet page</a> <br>
