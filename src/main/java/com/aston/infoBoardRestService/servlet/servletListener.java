@@ -39,8 +39,8 @@ public class servletListener implements ServletContextListener {
         OrderDao orderDao = new OrderDao();
         OrderService orderService = new OrderServiceImpl(orderDao);
 //        OrderController orderController = new OrderController(orderService);
-        final ServletContext servletContext = servletContextEvent.getServletContext();
-        servletContext.setAttribute("orderService", orderService);
+//        final ServletContext servletContext = servletContextEvent.getServletContext();
+        servletContextEvent.getServletContext().setAttribute("orderService", orderService);
 
     }
 

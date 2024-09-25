@@ -25,7 +25,7 @@ public class OrderController extends HttpServlet {
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
-        final Object o = getServletContext().getAttribute("orderService");
+        final Object o = servletConfig.getServletContext().getAttribute("orderService");
         this.orderService = (OrderService) o;
     }
 
@@ -37,9 +37,15 @@ public class OrderController extends HttpServlet {
             response.setCharacterEncoding("UTF-8");
 
             List<Order> orders = orderService.getOrders();
-            logger.log(Level.INFO, "Retrieved messages: {0}", objectMapper.writeValueAsString(orders.size()));
-            response.setStatus(HttpServletResponse.SC_OK);
-            objectMapper.writeValue(response.getWriter(), orders);
+
+            if (orders == null || orders.isEmpty()) {
+                logger.log(Level.WARNING, "No orders found");
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            } else {
+                logger.log(Level.INFO, "Retrieved messages: {0}", objectMapper.writeValueAsString(orders.size()));
+                response.setStatus(HttpServletResponse.SC_OK);
+                objectMapper.writeValue(response.getWriter(), orders);
+            }
         } catch (SQLException e) {
             logger.severe(String.format("SQL Exception: %s", e.getMessage()));
             throw new RuntimeException(e);
