@@ -9,11 +9,18 @@ import com.aston.infoBoardRestService.service.UserService;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 public class UserServiceImpl implements UserService {
-    private final UserDao userDao = new UserDao();
+    private UserDao userDao;
     private final UserMapper userMapper = UserMapper.INSTANCE;
+
+    public UserServiceImpl() {
+        userDao = new UserDao();
+    }
+
+    public UserServiceImpl(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Override
     public boolean saveUser(UserDto userDto) throws SQLException {
@@ -39,5 +46,10 @@ public class UserServiceImpl implements UserService {
                 () -> new UserNotFoundException("Can't find user with userId: " + userId)
         );
         return userMapper.toUserDTO(user);
+    }
+
+    @Override
+    public boolean deleteUser(String email) throws SQLException {
+        return userDao.deleteUser(email);
     }
 }

@@ -1,91 +1,84 @@
 package service;
 
+import com.aston.infoBoardRestService.dao.UserDao;
 import com.aston.infoBoardRestService.dto.UserDto;
+import com.aston.infoBoardRestService.entity.Message;
+import com.aston.infoBoardRestService.entity.User;
+import com.aston.infoBoardRestService.mapper.UserMapper;
 import com.aston.infoBoardRestService.service.UserService;
-import org.junit.jupiter.api.AfterEach;
+import com.aston.infoBoardRestService.service.impl.UserServiceImpl;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
-
-    private static PostgreSQLContainer<?> postgresContainer;
-
+    @InjectMocks
+    private UserService userService = new UserServiceImpl();
     @Mock
-    private UserService userService; // Mocking the service for user
+    private UserDao userDao;
+
+    private final UserMapper userMapper = UserMapper.INSTANCE;
+    private User mockUser;
+    private Message message;
+    List<Message> messages;
+    List<User> users;
 
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
+    void setUp() {
+        messages = List.of(
+                new Message(1L, "mock1", "mockName", LocalDateTime.now()),
+                new Message(1L, "mock2", "mockName", LocalDateTime.now())
+        );
 
-        // Initialize PostgreSQLContainer
-        postgresContainer = new PostgreSQLContainer<>("postgres:12-alpine")
-                .withDatabaseName("test")
-                .withUsername("test")
-                .withPassword("test");
-        postgresContainer.start();
+        mockUser = new User(1L, "mockName", "mock@email", messages);
 
-        // Set up the data source and inject it into your repository
-        String jdbcUrl = postgresContainer.getJdbcUrl();
-        System.setProperty("DB_URL", jdbcUrl);
-        System.setProperty("DB_USERNAME", postgresContainer.getUsername());
-        System.setProperty("DB_PASSWORD", postgresContainer.getPassword());
-    }
-
-    @AfterEach
-    public void tearDown() {
-        postgresContainer.stop();
+        users = List.of(mockUser);
     }
 
     @Test
     @DisplayName("test 1: getting user by email")
-    public void testGetUserByEmail() throws Exception {
-        // Mocking the service call
-        UserDto mockUser = new UserDto();
-        mockUser.setEmail("test@example.com");
-        when(userService.getUserByEmail("test@example.com")).thenReturn(mockUser);
-
-        // Verify the logic in the controller
-        assertEquals("test@example.com", mockUser.getEmail());
+    public void testGetUserByEmail() throws SQLException {
+        Mockito.when(userDao.getUserByEmail("mock@email")).thenReturn(mockUser);
+        UserDto userDto = userService.getUserByEmail("mock@email");
+        Assertions.assertEquals(mockUser, userMapper.ToUser(userDto));
+        Mockito.verify(userDao, times(1)).getUserByEmail("mock@email");
     }
 
     @Test
     @DisplayName("test 2: getting all users")
-    public void testGetAllUsers() throws Exception {
-        // Mocking the service call
-        UserDto mockUser = new UserDto();
-        mockUser.setEmail("test@example.com");
-        List<UserDto> mockUserList = List.of(mockUser);
-        when(userService.getAllUsers()).thenReturn(mockUserList);
-
-        // Assert that the returned users list is not empty
-        assertFalse(userService.getAllUsers().isEmpty());
+    public void testGetAllUsers() throws SQLException {
+        Mockito.when(userDao.getAllUsers()).thenReturn(users);
+        Assertions.assertFalse(userService.getAllUsers().isEmpty());
+        Mockito.verify(userDao, times(1)).getAllUsers();
     }
 
     @Test
     @DisplayName("test 3: saving the user")
-    public void testSaveUser() throws Exception {
-        UserDto newUser = new UserDto();
-        newUser.setEmail("jane.doe@example.com");
-        newUser.setName("Jane Doe");
+    public void testSaveUser() throws SQLException {
+        Mockito.when(userDao.saveUser(mockUser)).thenReturn(true);
+        Assertions.assertTrue(userService.saveUser(userMapper.toUserDTO(mockUser)));
+        Mockito.verify(userDao, times(1)).saveUser(mockUser);
+    }
 
-        when(userService.saveUser(newUser)).thenReturn(true);
-
-        assertTrue(userService.saveUser(newUser));
-
-        verify(userService, times(1)).saveUser(newUser);
+    @Test
+    @DisplayName("test 3: deleting the user")
+    public void testDeleteUser() throws SQLException {
+        Mockito.when(userDao.deleteUser("mock@email")).thenReturn(true);
+        Assertions.assertTrue(userService.deleteUser("mock@email"));
+        Mockito.verify(userDao, times(1)).deleteUser("mock@email");
     }
 
 }
