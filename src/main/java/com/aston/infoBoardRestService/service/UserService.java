@@ -13,4 +13,6 @@ public interface UserService {
     List<UserDto> getAllUsers() throws SQLException; // New method
 
     UserDto getUserById(Long id) throws SQLException;
+
+    boolean deleteUser(String email) throws SQLException;
 }
