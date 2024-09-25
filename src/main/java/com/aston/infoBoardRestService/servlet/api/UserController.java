@@ -2,12 +2,15 @@ package com.aston.infoBoardRestService.servlet.api;
 
 import com.aston.infoBoardRestService.dto.UserDto;
 import com.aston.infoBoardRestService.exception.UserNotFoundException;
+import com.aston.infoBoardRestService.service.MessageService;
 import com.aston.infoBoardRestService.service.UserService;
 import com.aston.infoBoardRestService.service.impl.UserServiceImpl;
 import com.aston.infoBoardRestService.util.LocalDateTimeSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,14 +24,19 @@ import java.util.logging.Logger;
 @WebServlet(name = "user controller", urlPatterns = {"/api/users/*"})
 public class UserController extends HttpServlet {
     private static final Logger logger = Logger.getLogger(MessageController.class.getName());
-    private final UserService userService = new UserServiceImpl();
-    private final ObjectMapper objectMapper;
+    private UserService userService;
+    private final ObjectMapper objectMapper =
+            new ObjectMapper().registerModule(
+                    new JavaTimeModule()
+                            .addSerializer(
+                                    LocalDateTime.class, new LocalDateTimeSerializer()
+                            )
+            );
 
-    public UserController() {
-        this.objectMapper = new ObjectMapper();
-        JavaTimeModule javaTimeModule = new JavaTimeModule();
-        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
-        this.objectMapper.registerModule(javaTimeModule);
+    @Override
+    public void init(ServletConfig servletConfig) throws ServletException {
+        super.init(servletConfig);
+        this.userService = (UserService) servletConfig.getServletContext().getAttribute("userService");
     }
 
     @Override
@@ -92,7 +100,7 @@ public class UserController extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String email = request.getParameter("email");
         String name = request.getParameter("name");
         boolean isSaved;

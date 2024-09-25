@@ -26,6 +26,15 @@ public class Message {
         this.timestamp = timestamp;
     }
 
+    public Message(Long id, Long authorId, String content, String authorName, LocalDateTime timestamp, User user) {
+        this.id = id;
+        this.authorId = authorId;
+        this.content = content;
+        this.authorName = authorName;
+        this.timestamp = timestamp;
+        this.user = user;
+    }
+
     public Long getId() {
         return id;
     }
@@ -79,12 +88,12 @@ public class Message {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Message message = (Message) o;
-        return Objects.equals(id, message.id) && Objects.equals(authorId, message.authorId) && Objects.equals(content, message.content) && Objects.equals(authorName, message.authorName)  ;
+        return Objects.equals(id, message.id) && Objects.equals(authorId, message.authorId) && Objects.equals(content, message.content) && Objects.equals(authorName, message.authorName) && Objects.equals(timestamp, message.timestamp) && Objects.equals(user, message.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, authorId, content, authorName);
+        return Objects.hash(id, authorId, content, authorName, timestamp, user);
     }
 
     @Override

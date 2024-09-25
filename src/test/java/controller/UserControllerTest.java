@@ -1,109 +1,121 @@
 package controller;
 
+import com.aston.infoBoardRestService.dto.MessageDto;
 import com.aston.infoBoardRestService.dto.UserDto;
+import com.aston.infoBoardRestService.entity.Message;
+import com.aston.infoBoardRestService.entity.User;
+import com.aston.infoBoardRestService.mapper.UserMapper;
 import com.aston.infoBoardRestService.service.UserService;
 import com.aston.infoBoardRestService.servlet.api.UserController;
-import org.junit.jupiter.api.AfterEach;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.testcontainers.containers.PostgreSQLContainer;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 // NOT WORKING
 // todo - fix
 public class UserControllerTest {
-
-    private static PostgreSQLContainer<?> postgresContainer;
+    private final UserMapper userMapper = UserMapper.INSTANCE;
 
     @Mock
-    private UserService userService; // Mocking the service for user
-
+    private UserService userService;
+    @Mock
+    private HttpServletRequest request;
+    @Mock
+    private PrintWriter writer;
+    @Mock
+    private HttpServletResponse response;
     @InjectMocks
-    private UserController userController; // Injecting mock into controller
+    private UserController userController;
+
+    private ObjectMapper objectMapper;
+    private User mockUser1;
+    private User mockUser2;
+    private Message message1;
+    private Message message2;
+    private Message message3;
+    private Message message4;
+    List<UserDto> userDtoList;
+    List<MessageDto> messageDtos;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws ServletException, IOException {
         MockitoAnnotations.openMocks(this);
+        userController.init();
 
-        // Initialize PostgreSQLContainer
-        postgresContainer = new PostgreSQLContainer<>("postgres:12-alpine")
-                .withDatabaseName("test")
-                .withUsername("test")
-                .withPassword("test");
-        postgresContainer.start();
+        objectMapper = new ObjectMapper();
 
-        // Set up the data source and inject it into your repository
-        String jdbcUrl = postgresContainer.getJdbcUrl();
-        System.setProperty("DB_URL", jdbcUrl);
-        System.setProperty("DB_USERNAME", postgresContainer.getUsername());
-        System.setProperty("DB_PASSWORD", postgresContainer.getPassword());
+        userDtoList = new ArrayList<>();
+
+        message1 = new Message(1L, 1L, "mock message 1", "mockName1", LocalDateTime.now(), null);
+        message2 = new Message(2L, 1L, "mock message 2", "mockName1", LocalDateTime.now(), null);
+        message3 = new Message(3L, 2L, "mock message 3", "mockName2", LocalDateTime.now(), null);
+        message4 = new Message(4L, 2L, "mock message 4", "mockName2", LocalDateTime.now(), null);
+
+        mockUser1 = new User(1L,"mockName1", "mock@email1", List.of(message1, message2));
+        mockUser2 = new User(2L, "mockName2", "mock@email2", List.of(message3, message4));
+
+        userDtoList.add(userMapper.toUserDTO(mockUser1));
+        userDtoList.add(userMapper.toUserDTO(mockUser2));
+
+        Mockito.when(response.getWriter()).thenReturn(writer);
+
     }
 
-    @AfterEach
-    public void tearDown() {
-        postgresContainer.stop();
-    }
+// todo -> add doGet (3 test)
 
-
-    // todo - fix
-    // use spy?
     @Test
     public void testSaveUserThroughController() throws Exception {
-        // Create a new user to save
-        UserDto newUser = new UserDto();
-        newUser.setEmail("test@example.com");
-        newUser.setName("Test User");
 
-        // Mock the service call inside the controller
-        when(userService.saveUser(any(UserDto.class))).thenReturn(true);
+        // Mock request parameters
+        Mockito.when(request.getParameter("email")).thenReturn(mockUser1.getEmail());
+        Mockito.when(request.getParameter("name")).thenReturn(mockUser1.getName());
 
-        // Mock HttpServletRequest and HttpServletResponse
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
+        // Mock the service call
+        Mockito.when(userService.saveUser(any(UserDto.class))).thenReturn(true);
 
-
-        // Mock response writer
+        // Prepare the response writer
         StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        when(response.getWriter()).thenReturn(printWriter);
+        PrintWriter writer = new PrintWriter(stringWriter);
+        Mockito.when(response.getWriter()).thenReturn(writer);
 
-        // Access the protected doPost method using reflection
-        Method doPostMethod = UserController.class.getDeclaredMethod("doPost", HttpServletRequest.class, HttpServletResponse.class);
-        doPostMethod.setAccessible(true);
+        // Call the doPost method
+        userController.doPost(request, response);
 
-        // Invoke the method
-        doPostMethod.invoke(userController, request, response);
-
-        // Verify that the service was called
+        // Verify the service call
         ArgumentCaptor<UserDto> userDtoCaptor = ArgumentCaptor.forClass(UserDto.class);
-        verify(userService, times(1)).saveUser(userDtoCaptor.capture());
+        Mockito.verify(userService, Mockito.times(1)).saveUser(userDtoCaptor.capture());
+        Mockito.verify(response, Mockito.times(1)).setStatus(HttpServletResponse.SC_OK);
 
         // Verify the captured UserDto
         UserDto capturedUser = userDtoCaptor.getValue();
-        assertEquals(newUser.getEmail(), capturedUser.getEmail());
-        assertEquals(newUser.getName(), capturedUser.getName());
+        assertEquals(mockUser1.getEmail(), capturedUser.getEmail());
+        assertEquals(mockUser1.getName(), capturedUser.getName());
 
-        // Verify response status and content
-        verify(response).setStatus(HttpServletResponse.SC_OK);
-        printWriter.flush(); // Ensure all data is written to the stringWriter
+        // Ensure all data is written to the stringWriter
+        writer.flush();
         assertEquals("User saved successfully", stringWriter.toString().trim());
     }
 
