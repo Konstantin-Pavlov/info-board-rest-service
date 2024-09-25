@@ -1,160 +1,140 @@
 package controller;
 
 import com.aston.infoBoardRestService.dto.MessageDto;
-import com.aston.infoBoardRestService.dto.UserDto;
+import com.aston.infoBoardRestService.entity.Message;
+import com.aston.infoBoardRestService.entity.User;
 import com.aston.infoBoardRestService.mapper.MessageMapper;
 import com.aston.infoBoardRestService.service.MessageService;
 import com.aston.infoBoardRestService.servlet.api.MessageController;
-import com.aston.infoBoardRestService.util.LocalDateTimeSerializer;
-import com.aston.infoBoardRestService.util.MessageGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-
-/*
-NOT WORKING!
-Wanted but not invoked:
-messageService.getAllMessages();
--> at controller.MessageControllerTest.testGetAllMessages(MessageControllerTest.java:81)
-Actually, there were zero interactions with this mock.
-
-Wanted but not invoked:
-messageService.getAllMessages();
--> at controller.MessageControllerTest.testGetAllMessages(MessageControllerTest.java:81)
-Actually, there were zero interactions with this mock.
-* */
-
-// todo - fix
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 public class MessageControllerTest {
     private final MessageMapper messageMapper = MessageMapper.INSTANCE;
 
     @Mock
     private MessageService messageService;
-
+    @Mock
+    private HttpServletRequest request;
+    @Mock
+    private PrintWriter writer;
+    @Mock
+    private HttpServletResponse response;
     @InjectMocks
     private MessageController messageController;
+    private ObjectMapper objectMapper;
+    private Message message1;
+    private Message message2;
+    List<MessageDto> messageDtos;
 
     @BeforeEach
-    void setUp() throws SQLException, JsonProcessingException, ServletException {
+    void setUp() throws IOException, ServletException {
         MockitoAnnotations.openMocks(this);
-//        messageController.init();
-        initMessageControllerMock();
-    }
+        messageController.init();
 
-    private void initMessageControllerMock() throws SQLException, JsonProcessingException {
-        when(messageService.getAllMessages()).thenReturn(Collections.singletonList(getMessageWithUser()));
-//        when(messageService.getMessageById(1L)).thenReturn(getMessageWithUser());
-//        when(messageService.getMessagesByAuthorEmail("test@email.com")).thenReturn(Collections.singletonList(getMessageWithUser()));
+        objectMapper = new ObjectMapper();
 
-        String json = "{ \"id\": 1, \"authorId\": 2, \"content\": \"This is a test message.\", \"authorName\": \"author_name1\", \"timestamp\": \"2023-10-01T12:00:00\", \"user\": { \"id\": 1, \"name\": \"author_name1\", \"email\": \"author@example.com\" } }";
-        ObjectMapper objectMapper = new ObjectMapper();
-        JavaTimeModule javaTimeModule = new JavaTimeModule();
-        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
-        objectMapper.registerModule(javaTimeModule);
-        MessageDto messageDto = objectMapper.readValue(json, MessageDto.class);
+        message1 = new Message();
+        message2 = new Message();
+        messageDtos = new ArrayList<>();
+        User mockUser = new User("mockName", "mock@email");
 
-        doNothing().when(messageService).updateMessage(messageDto);
-        doNothing().when(messageService).saveMessage(messageDto);
+        message1.setId(1L);
+        message1.setContent("mock1");
+        message1.setAuthorName("mockName");
+        message1.setUser(mockUser);
+
+        message2.setId(2L);
+        message2.setContent("mock2");
+        message2.setAuthorName("mockName");
+        message2.setUser(mockUser);
+
+        messageDtos.add(messageMapper.toMessageDto(message1));
+        messageDtos.add(messageMapper.toMessageDto(message2));
+
+        Mockito.when(response.getWriter()).thenReturn(writer);
     }
 
     @Test
     public void testGetAllMessages() throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
+        Mockito.when(messageService.getAllMessages()).thenReturn(messageDtos);
 
         StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        when(response.getWriter()).thenReturn(printWriter);
+        PrintWriter writer = new PrintWriter(stringWriter);
+        Mockito.when(response.getWriter()).thenReturn(writer);
 
         messageController.doGet(request, response);
 
-        verify(messageService, times(1)).getAllMessages();
-        verify(response).setStatus(HttpServletResponse.SC_OK);
-        printWriter.flush();
-        assertEquals("[{\"id\":null,\"authorId\":null,\"content\":null,\"authorName\":null,\"timestamp\":null,\"user\":null}]", stringWriter.toString().trim());
+        Mockito.verify(messageService, Mockito.times(1)).getAllMessages();
+        Mockito.verify(response, Mockito.times(1)).setStatus(HttpServletResponse.SC_OK);
+
+        String jsonResponse = stringWriter.toString();
+        Assertions.assertTrue(jsonResponse.contains("mock1"));
+        Assertions.assertTrue(jsonResponse.contains("mock2"));
+        assertEquals(objectMapper.writeValueAsString(messageDtos), stringWriter.toString().trim());
     }
 
     @Test
-    public void testGetMessageById() throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
+    public void testGetMessageById() throws IOException, SQLException {
 
-        when(request.getPathInfo()).thenReturn("/1");
+        Mockito.when(messageService.getMessageById(1L)).thenReturn(messageMapper.toMessageDto(message1));
+        Mockito.when(request.getPathInfo()).thenReturn("/1");
 
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
-        when(response.getWriter()).thenReturn(printWriter);
+        Mockito.when(response.getWriter()).thenReturn(printWriter);
 
         messageController.doGet(request, response);
 
-        verify(messageService, times(1)).getMessageById(1L);
+        verify(messageService, Mockito.times(1)).getMessageById(1L);
         verify(response).setStatus(HttpServletResponse.SC_OK);
         printWriter.flush();
-        assertEquals("{\"id\":null,\"authorId\":null,\"content\":null,\"authorName\":null,\"timestamp\":null,\"user\":null}", stringWriter.toString().trim());
+        assertEquals(objectMapper.writeValueAsString(messageMapper.toMessageDto(message1)), stringWriter.toString().trim());
     }
 
     @Test
     public void testGetMessagesByAuthorEmail() throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-
-        when(request.getPathInfo()).thenReturn("/test@email.com");
+        Mockito.when(messageService.getMessagesByAuthorEmail("mock@email")).thenReturn(messageDtos);
+        Mockito.when(request.getPathInfo()).thenReturn("/mock@email");
 
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
-        when(response.getWriter()).thenReturn(printWriter);
+        Mockito.when(response.getWriter()).thenReturn(printWriter);
 
         messageController.doGet(request, response);
 
-        verify(messageService, times(1)).getMessagesByAuthorEmail("test@email.com");
+        verify(messageService, Mockito.times(1)).getMessagesByAuthorEmail("mock@email");
         verify(response).setStatus(HttpServletResponse.SC_OK);
-        printWriter.flush();
-        assertEquals("[{\"id\":null,\"authorId\":null,\"content\":null,\"authorName\":null,\"timestamp\":null,\"user\":null}]", stringWriter.toString().trim());
+
+        String jsonResponse = stringWriter.toString();
+        Assertions.assertTrue(jsonResponse.contains("mock1"));
+        Assertions.assertTrue(jsonResponse.contains("mock2"));
+        assertEquals(objectMapper.writeValueAsString(messageDtos), stringWriter.toString().trim());
     }
 
-    private MessageDto getMessageWithUser() throws JsonProcessingException {
-        UserDto userDto = new UserDto();
-        MessageDto messageDto = new MessageDto();
-
-        userDto.setId(1000L);
-        userDto.setName("James");
-        userDto.setEmail("james@email.com");
-
-        messageDto.setId(12345L);
-        messageDto.setAuthorId(userDto.getId());
-        messageDto.setContent("This is a test message from " + userDto.getName());
-        messageDto.setAuthorName(userDto.getName());
-        messageDto.setTimestamp(LocalDateTime.now());
-
-        return messageDto;
-    }
 }

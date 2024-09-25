@@ -1,7 +1,10 @@
 package com.aston.infoBoardRestService.servlet;
 
+import com.aston.infoBoardRestService.dao.MessageDao;
 import com.aston.infoBoardRestService.dao.OrderDao;
+import com.aston.infoBoardRestService.service.MessageService;
 import com.aston.infoBoardRestService.service.OrderService;
+import com.aston.infoBoardRestService.service.impl.MessageServiceImpl;
 import com.aston.infoBoardRestService.service.impl.OrderServiceImpl;
 import com.aston.infoBoardRestService.util.DbUtil;
 import com.aston.infoBoardRestService.util.TableUtil;
@@ -38,9 +41,11 @@ public class servletListener implements ServletContextListener {
 
         OrderDao orderDao = new OrderDao();
         OrderService orderService = new OrderServiceImpl(orderDao);
-//        OrderController orderController = new OrderController(orderService);
-//        final ServletContext servletContext = servletContextEvent.getServletContext();
         servletContextEvent.getServletContext().setAttribute("orderService", orderService);
+
+        MessageDao messageDao = new MessageDao();
+        MessageService messageService = new MessageServiceImpl(messageDao);
+        servletContextEvent.getServletContext().setAttribute("messageService", messageService);
 
     }
 

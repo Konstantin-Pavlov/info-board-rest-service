@@ -2,11 +2,12 @@ package com.aston.infoBoardRestService.servlet.api;
 
 import com.aston.infoBoardRestService.dto.MessageDto;
 import com.aston.infoBoardRestService.service.MessageService;
-import com.aston.infoBoardRestService.service.impl.MessageServiceImpl;
 import com.aston.infoBoardRestService.util.LocalDateTimeSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,16 +22,23 @@ import java.util.logging.Logger;
 @WebServlet(name = "message controller", urlPatterns = {"/api/messages/*"})
 public class MessageController extends HttpServlet {
     private static final Logger logger = Logger.getLogger(MessageController.class.getName());
-    private final MessageService messageService = new MessageServiceImpl();
-    private final ObjectMapper objectMapper;
+    private MessageService messageService;
+    private final ObjectMapper objectMapper =
+            new ObjectMapper().registerModule(
+                    new JavaTimeModule()
+                            .addSerializer(
+                                    LocalDateTime.class, new LocalDateTimeSerializer()
+                            )
+            );
 
-    public MessageController() {
-        this.objectMapper = new ObjectMapper();
-        JavaTimeModule javaTimeModule = new JavaTimeModule();
-        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
-        this.objectMapper.registerModule(javaTimeModule);
+    @Override
+    public void init(ServletConfig servletConfig) throws ServletException {
+        super.init(servletConfig);
+        this.messageService = (MessageService) servletConfig.getServletContext().getAttribute("messageService");
     }
 
+
+    // todo -> line 62; line 73 -> two similar endpoints?
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
