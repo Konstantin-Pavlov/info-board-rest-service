@@ -4,6 +4,7 @@ import com.aston.infoBoardRestService.entity.User;
 
 import java.time.LocalDateTime;
 
+// todo -> use UserDto instead of User
 public class MessageDto {
     private Long id;
 

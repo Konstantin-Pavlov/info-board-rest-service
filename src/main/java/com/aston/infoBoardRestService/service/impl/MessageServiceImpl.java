@@ -11,8 +11,16 @@ import java.util.List;
 
 public class MessageServiceImpl implements MessageService {
 
-    private final MessageDao messageDao = new MessageDao();
+    private  MessageDao messageDao ;
     private final MessageMapper messageMapper = MessageMapper.INSTANCE;
+
+    public MessageServiceImpl() {
+        messageDao = new MessageDao();
+    }
+
+    public MessageServiceImpl(MessageDao messageDao) {
+        this.messageDao = messageDao;
+    }
 
     @Override
     public boolean saveMessage(MessageDto messageDTO) throws SQLException {

@@ -1,6 +1,7 @@
 package com.aston.infoBoardRestService.entity;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Message {
     private Long id;
@@ -71,6 +72,19 @@ public class Message {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Message message = (Message) o;
+        return Objects.equals(id, message.id) && Objects.equals(authorId, message.authorId) && Objects.equals(content, message.content) && Objects.equals(authorName, message.authorName)  ;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, authorId, content, authorName);
     }
 
     @Override

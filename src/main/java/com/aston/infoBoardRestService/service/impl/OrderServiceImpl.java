@@ -8,7 +8,10 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class OrderServiceImpl implements OrderService {
-    private final OrderDao orderDao;
+    private  OrderDao orderDao;
+
+    public OrderServiceImpl() {
+    }
 
     public OrderServiceImpl(OrderDao orderDao) {
         this.orderDao = orderDao;

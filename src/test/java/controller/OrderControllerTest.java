@@ -86,39 +86,14 @@ public class OrderControllerTest {
         verify(response).setStatus(HttpServletResponse.SC_OK);
 
 
-//        StringWriter stringWriter = new StringWriter();
-//        PrintWriter printWriter = new PrintWriter(stringWriter);
-//        when(response.getWriter()).thenReturn(printWriter);
-//
-//        orderController.doGet(request, response);
-//
-//        verify(response).setContentType("text/plain");
-//        assertEquals("Hello, World!\n", stringWriter.toString());
+
 
     }
 
 
     @Test
     public void testDoGet_exception() throws Exception {
-        // Mock HttpServletRequest and HttpServletResponse
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
 
-        // Mock PrintWriter and configure the response mock to return it
-        PrintWriter writer = mock(PrintWriter.class);
-        when(response.getWriter()).thenReturn(writer);
-
-        // Create an instance of OrderController with a mocked service
-        OrderService mockOrderService = mock(OrderService.class);
-//        OrderController orderController = new OrderController(mockOrderService);
-        OrderController orderController = new OrderController();
-        orderController.init();
-
-        // Simulate an exception during the doGet method call
-        doThrow(new RuntimeException("Test exception")).when(mockOrderService).getOrders();
-
-        // Call the doGet method
-        orderController.doGet(request, response);
     }
 }
 

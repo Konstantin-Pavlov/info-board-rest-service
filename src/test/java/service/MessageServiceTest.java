@@ -1,92 +1,85 @@
 package service;
 
+import com.aston.infoBoardRestService.dao.MessageDao;
 import com.aston.infoBoardRestService.dto.MessageDto;
+import com.aston.infoBoardRestService.entity.Message;
+import com.aston.infoBoardRestService.entity.User;
+import com.aston.infoBoardRestService.mapper.MessageMapper;
 import com.aston.infoBoardRestService.service.MessageService;
-import org.junit.jupiter.api.AfterEach;
+import com.aston.infoBoardRestService.service.impl.MessageServiceImpl;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class MessageServiceTest {
-
-    private static PostgreSQLContainer<?> postgresContainer;
-
+    @InjectMocks
+    private MessageService messageService = new MessageServiceImpl();
     @Mock
-    private MessageService messageService; // Mocking the service for message
+    private MessageDao messageDao;
+
+    private final MessageMapper messageMapper = MessageMapper.INSTANCE;
+    private Message message;
+    List<Message> messages;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
+        message = new Message();
+        messages = new ArrayList<>();
+        User mockUser1 = new User("mockName", "mock@email");
 
-        // Initialize PostgreSQLContainer
-        postgresContainer = new PostgreSQLContainer<>("postgres:12-alpine")
-                .withDatabaseName("test")
-                .withUsername("test")
-                .withPassword("test");
-        postgresContainer.start();
+        message.setId(1L);
+        message.setContent("mock");
+        message.setAuthorName("mockName");
+        message.setUser(mockUser1);
 
-        // Set up the data source and inject it into your repository
-        String jdbcUrl = postgresContainer.getJdbcUrl();
-        System.setProperty("DB_URL", jdbcUrl);
-        System.setProperty("DB_USERNAME", postgresContainer.getUsername());
-        System.setProperty("DB_PASSWORD", postgresContainer.getPassword());
-    }
-
-    @AfterEach
-    public void tearDown() {
-        postgresContainer.stop();
+        messages.add(message);
     }
 
     @Test
     @DisplayName("testing getting message by id")
-    public void testGetMessageById() throws Exception {
-        // Mocking the service call
-        MessageDto mockMessageDto = new MessageDto();
-        mockMessageDto.setContent("test");
-        mockMessageDto.setId(1L);
-        when(messageService.getMessageById(1L)).thenReturn(mockMessageDto);
-
-        // Verify the logic in the controller
-        assertEquals("test", mockMessageDto.getContent());
+    public void testGetMessageById() throws SQLException {
+        Mockito.when(messageDao.getMessage(Mockito.anyLong())).thenReturn(message);
+        MessageDto messageById = messageService.getMessageById(1L);
+        Assertions.assertEquals("mock", messageById.getContent());
+        Mockito.verify(messageDao,Mockito.times(1)).getMessage(Mockito.anyLong());
     }
 
     @Test
     @DisplayName("testing getting all the messages")
     public void testGetAllMessages() throws Exception {
-        // Mocking the service call
-        MessageDto mockMessageDto = new MessageDto();
-        mockMessageDto.setAuthorName("james");
-        List<MessageDto> mockUserList = List.of(mockMessageDto);
-        when(messageService.getAllMessages()).thenReturn(mockUserList);
-
-        // Assert that the returned users list is not empty
-        assertFalse(messageService.getAllMessages().isEmpty());
+        Mockito.when(messageDao.getAllMessages()).thenReturn(messages);
+        Assertions.assertFalse(messageService.getAllMessages().isEmpty());
+        Mockito.verify(messageDao, Mockito.times(1)).getAllMessages();
     }
 
     @Test
     @DisplayName("testing saving message")
     public void testSaveMessage() throws Exception {
-        MessageDto messageDto = new MessageDto();
-        messageDto.setAuthorName("james");
-        messageDto.setContent("test");
+        Mockito.when(messageDao.saveMessage(message)).thenReturn(true);
+        Assertions.assertTrue(messageService.saveMessage(messageMapper.toMessageDto(message)));
+        Mockito.verify(messageDao, Mockito.times(1)).saveMessage(message);
+    }
 
-        when(messageService.saveMessage(messageDto)).thenReturn(true);
-
-        assertTrue(messageService.saveMessage(messageDto));
-
-        verify(messageService, times(1)).saveMessage(messageDto);
+    @Test
+    @DisplayName("testing deleting message")
+    public void testDeleteMessage() throws Exception {
+        Mockito.when(messageDao.deleteMessage(Mockito.anyLong())).thenReturn(true);
+        Assertions.assertTrue(messageService.deleteMessage(1L));
+        Mockito.verify(messageDao, Mockito.times(1)).deleteMessage(1L);
     }
 
 }
