@@ -25,7 +25,7 @@
 <p>in gsp file we can access the request variable - <code>String name = request.getParameter("name");</code>
     so that's  how we got the name guest (link should be http://localhost:8080/greeting.jsp?name=guest) </p>
 
-<p>also you can see another example of the same thing done in servlet class via this <a href="http://localhost:8080/GreetServlet?name=Tom&surname=Hanks">link</a><p>
+<p>also you can see another example of the same thing done in servlet class via this <a href="http://localhost:8080/info-board/GreetServlet?name=Tom&surname=Hanks">link</a><p>
 <br>
 <p>this file name is greet.jsp, but url is greeting.jsp, we can do it in web.xml using mapping</p>
 
@@ -41,7 +41,7 @@
     &lt;/servlet-mapping&gt;
 </pre>
 
-<br> <a href="http://localhost:8080/">homepage</a> <br>
+<br> <a href="http://localhost:8080/info-board/">homepage</a> <br>
 
 </body>
 </html>

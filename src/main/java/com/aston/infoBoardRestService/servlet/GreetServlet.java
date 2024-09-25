@@ -44,7 +44,7 @@ public class GreetServlet extends HttpServlet {
         out.println("<p>example of url with params: http://localhost:8080/GreetServlet?name=Tom&surname=Hanks</p>");
         out.println("</body>");
         out.println("</html>");
-        out.println("<br>  <a href=\"http://localhost:8080/\">homepage</a> <br>\n");
+        out.println("<br>  <a href=\"http://localhost:8080/info-board/\">homepage</a> <br>\n");
     }
 
     @Override

@@ -28,7 +28,7 @@
 </p>
 
 <p>
-    <br> <a href="http://localhost:8080/">homepage</a> <br>
+    <br> <a href="http://localhost:8080/info-board/">homepage</a> <br>
 </p>
 
 </body>

@@ -40,6 +40,6 @@
 </c:if>
 
 <br>
-<a href="http://localhost:8080/">Homepage</a>
+<a href="http://localhost:8080/info-board/">Homepage</a>
 </body>
 </html>

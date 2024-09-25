@@ -60,7 +60,7 @@ public class MessageServlet extends HttpServlet {
 
         out.println("<br>");
 
-        out.println("<br>  <a href=\"http://localhost:8080/\"\">homepage</a> <br>\n");
+        out.println("<br>  <a href=\"http://localhost:8080/info-board/\"\">homepage</a> <br>\n");
         out.println("</html>");
     }
 
