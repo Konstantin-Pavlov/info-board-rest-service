@@ -52,6 +52,7 @@ public class MessageDao {
                 return message;
             }
         }
+        logger.warning(String.format("Message with id %s not found", id));
         return null;
     }
 

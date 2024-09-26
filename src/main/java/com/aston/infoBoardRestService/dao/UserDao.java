@@ -138,24 +138,46 @@ public class UserDao {
         }
     }
 
+    public boolean updateUser(User user) throws SQLException {
+        if (getUserById(user.getId()).isEmpty()) {
+            logger.warning("User with id " + user.getId() + " does not exist");
+            return false;
+        }
+
+        String query = "UPDATE users SET username = ?, email = ? WHERE id = ?";
+        try (Connection connection = DbUtil.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, user.getName());
+            statement.setString(2, user.getEmail());
+            statement.setLong(3, user.getId());
+            statement.executeUpdate();
+            logger.info("User with id " + user.getId() + " has been updated");
+            return true;
+        }
+    }
+
     public boolean deleteUser(String email) throws SQLException {
         User user = getUserByEmail(email);
         if (user == null) {
             logger.warning("User with email " + email + " does not exist");
             return false;
         }
+
+        // Delete the messages associated with the user first
+        if (user.getMessages() != null) {
+            for (Message message : user.getMessages()) {
+                messageDao.deleteMessage(message.getId());
+                logger.info(String.format("Message with id=[%d] has been deleted", message.getId()));
+            }
+        }
+
+        // Delete the user
         String query = "DELETE FROM users WHERE email = ?";
         try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, user.getEmail());
             statement.executeUpdate();
             logger.info(String.format("User with id=[%d], email=[%s], name=[%s] has been deleted", user.getId(), user.getEmail(), user.getName()));
-            if (user.getMessages() != null) {
-                for (Message message : user.getMessages()) {
-                    messageDao.deleteMessage(message.getId());
-                    logger.info(String.format("%s has been deleted", message));
-                }
-            }
         }
         return true;
     }
@@ -178,10 +200,21 @@ public class UserDao {
             );
             return null;
         }
+
+        if (resultSet.getString("content") == null
+                && resultSet.getString("author_name") == null
+                && resultSet.getObject("timestamp", LocalDateTime.class) == null) {
+            logger.warning(String.format(
+                    "Message not found for user with  email %s ", userEmail)
+            );
+            return null;
+        }
+
         logger.info(String.format(
                 "Message with id %s and user email %s found",
                 messageId, userEmail)
         );
+
         Message message = new Message();
         message.setId(messageId);
         message.setAuthorId(resultSet.getLong("author_id"));
