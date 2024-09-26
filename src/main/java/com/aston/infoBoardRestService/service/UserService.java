@@ -8,7 +8,7 @@ import java.util.List;
 public interface UserService {
     boolean saveUser(UserDto user) throws SQLException;
 
-    UserDto getUserByEmail(String name) throws SQLException;
+    UserDto getUserByEmail(String email) throws SQLException;
 
     List<UserDto> getAllUsers() throws SQLException; // New method
 

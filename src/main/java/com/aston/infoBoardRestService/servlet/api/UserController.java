@@ -89,8 +89,15 @@ public class UserController extends HttpServlet {
             // No specific user requested, return all users
             try {
                 List<UserDto> users = userService.getAllUsers();
-                resp.setStatus(HttpServletResponse.SC_OK);
-                objectMapper.writeValue(resp.getWriter(), users);
+                if(users.isEmpty()){
+                    logger.warning("No Users found");
+                    resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                }else {
+                    logger.info(String.format("Found %d users", users.size()));
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    objectMapper.writeValue(resp.getWriter(), users);
+                }
+
             } catch (SQLException e) {
                 logger.warning(String.format("error while getting users: %s", e.getMessage()));
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -129,6 +136,5 @@ public class UserController extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
-
 
 }
