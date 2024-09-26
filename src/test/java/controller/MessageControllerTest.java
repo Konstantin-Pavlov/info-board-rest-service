@@ -9,6 +9,7 @@ import com.aston.infoBoardRestService.servlet.api.MessageController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -80,6 +81,7 @@ public class MessageControllerTest {
         Mockito.when(response.getWriter()).thenReturn(writer);
     }
 
+    @DisplayName("Test: get all messages")
     @Test
     public void testGetAllMessages() throws Exception {
         Mockito.when(messageService.getAllMessages()).thenReturn(messageDtos);
@@ -99,6 +101,26 @@ public class MessageControllerTest {
         assertEquals(objectMapper.writeValueAsString(messageDtos), stringWriter.toString().trim());
     }
 
+    @DisplayName("Test: Return all messages when no specific path is provided")
+    @Test
+    public void testGetAllMessagesWhenNoPathProvided() throws Exception {
+        Mockito.when(request.getPathInfo()).thenReturn(null);
+        Mockito.when(messageService.getAllMessages()).thenReturn(messageDtos);
+
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        Mockito.when(response.getWriter()).thenReturn(printWriter);
+
+        messageController.doGet(request, response);
+
+        verify(messageService, Mockito.times(1)).getAllMessages();
+        verify(response, Mockito.times(1)).setStatus(HttpServletResponse.SC_OK);
+
+        printWriter.flush();
+        assertEquals(objectMapper.writeValueAsString(messageDtos), stringWriter.toString().trim());
+    }
+
+    @DisplayName("Test: get message by id")
     @Test
     public void testGetMessageById() throws IOException, SQLException {
 
@@ -117,6 +139,57 @@ public class MessageControllerTest {
         assertEquals(objectMapper.writeValueAsString(messageMapper.toMessageDto(message1)), stringWriter.toString().trim());
     }
 
+    @DisplayName("Test: Handle SQLException during message retrieval")
+    @Test
+    public void testSQLExceptionHandling() throws Exception {
+        Mockito.when(request.getPathInfo()).thenReturn("/43671");
+        Mockito.when(messageService.getMessageById(43671L)).thenThrow(new SQLException("Database error"));
+
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        Mockito.when(response.getWriter()).thenReturn(printWriter);
+
+        messageController.doGet(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        printWriter.flush();
+        Assertions.assertTrue(stringWriter.toString().contains("Error retrieving message"));
+    }
+
+    @DisplayName("Test: Return 404 when message by ID is not found")
+    @Test
+    public void testMessageByIdNotFound() throws Exception {
+        Mockito.when(request.getPathInfo()).thenReturn("/99");
+        Mockito.when(messageService.getMessageById(99L)).thenReturn(null);
+
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        Mockito.when(response.getWriter()).thenReturn(printWriter);
+
+        messageController.doGet(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);
+        printWriter.flush();
+        Assertions.assertTrue(stringWriter.toString().contains("message with id 99 not found"));
+    }
+
+    @DisplayName("Test: Handle non-numeric ID in path when trying to get message by ID")
+    @Test
+    public void testNonNumericIdInPath() throws Exception {
+        Mockito.when(request.getPathInfo()).thenReturn("/32h65f");
+
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        Mockito.when(response.getWriter()).thenReturn(printWriter);
+
+        messageController.doGet(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        printWriter.flush();
+        Assertions.assertTrue(stringWriter.toString().contains("Invalid ID format"));
+    }
+
+    @DisplayName("Test: get all messages by user email")
     @Test
     public void testGetMessagesByAuthorEmail() throws Exception {
         Mockito.when(messageService.getMessagesByAuthorEmail("mock@email")).thenReturn(messageDtos);
@@ -134,7 +207,23 @@ public class MessageControllerTest {
         String jsonResponse = stringWriter.toString();
         Assertions.assertTrue(jsonResponse.contains("mock1"));
         Assertions.assertTrue(jsonResponse.contains("mock2"));
-        assertEquals(objectMapper.writeValueAsString(messageDtos), stringWriter.toString().trim());
+        Assertions.assertEquals(objectMapper.writeValueAsString(messageDtos), stringWriter.toString().trim());
+    }
+
+    @DisplayName("Test: get all messages by user email: Handle invalid email format in path")
+    @Test
+    public void testInvalidEmailFormatInPath() throws Exception {
+        Mockito.when(request.getPathInfo()).thenReturn("/invalid-email");
+
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        Mockito.when(response.getWriter()).thenReturn(printWriter);
+
+        messageController.doGet(request, response);
+
+        Mockito.verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        printWriter.flush();
+        Assertions.assertTrue(stringWriter.toString().contains("Invalid ID format"));
     }
 
 }
