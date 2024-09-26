@@ -2,9 +2,7 @@ package com.aston.infoBoardRestService.servlet.api;
 
 import com.aston.infoBoardRestService.dto.UserDto;
 import com.aston.infoBoardRestService.exception.UserNotFoundException;
-import com.aston.infoBoardRestService.service.MessageService;
 import com.aston.infoBoardRestService.service.UserService;
-import com.aston.infoBoardRestService.service.impl.UserServiceImpl;
 import com.aston.infoBoardRestService.util.LocalDateTimeSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -15,6 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -89,10 +88,10 @@ public class UserController extends HttpServlet {
             // No specific user requested, return all users
             try {
                 List<UserDto> users = userService.getAllUsers();
-                if(users.isEmpty()){
+                if (users.isEmpty()) {
                     logger.warning("No Users found");
                     resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
-                }else {
+                } else {
                     logger.info(String.format("Found %d users", users.size()));
                     resp.setStatus(HttpServletResponse.SC_OK);
                     objectMapper.writeValue(resp.getWriter(), users);
@@ -108,33 +107,55 @@ public class UserController extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String email = request.getParameter("email");
-        String name = request.getParameter("name");
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        // Read the request body
+        StringBuilder jsonBuffer = new StringBuilder();
+        String line;
+        try (BufferedReader reader = request.getReader()) {
+            while ((line = reader.readLine()) != null) {
+                jsonBuffer.append(line);
+            }
+        }
+
+        // Parse the JSON input
+        String jsonString = jsonBuffer.toString();
+        UserDto userDto;
+        try {
+            userDto = objectMapper.readValue(jsonString, UserDto.class);
+        } catch (IOException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"message\": \"Invalid JSON format\"}");
+            return;
+        }
+
+        // Validate the input
+        if (userDto.getEmail() == null || userDto.getName() == null) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"message\": \"Email and name are required\"}");
+            return;
+        }
+
         boolean isSaved;
 
-        if (email != null && name != null) {
-            UserDto userDto = new UserDto();
-            userDto.setEmail(email);
-            userDto.setName(name);
-
-            try {
-                isSaved = userService.saveUser(userDto);
-            } catch (SQLException e) {
-                logger.warning(String.format("error while saving user with email %s; error message: %s", email, e.getMessage()));
-                throw new RuntimeException(e);
-            }
-
-            if (isSaved) {
-                response.getWriter().write("User saved successfully");
-                response.setStatus(HttpServletResponse.SC_OK);
-            } else {
-                response.getWriter().write("Failed to save user");
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            }
-        } else {
-            response.getWriter().write("Invalid input");
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        try {
+            isSaved = userService.saveUser(userDto);
+        } catch (SQLException e) {
+            logger.warning(String.format("Error while saving user with email %s; error message: %s", userDto.getEmail(), e.getMessage()));
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"message\": \"Error saving user: " + e.getMessage() + "\"}");
+            return;
         }
+
+        if (isSaved) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write("{\"message\": \"User saved successfully\"}");
+        } else {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"message\": \"Failed to save user\"}");
+        }
+
     }
 
 }
