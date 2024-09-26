@@ -24,8 +24,10 @@ import org.mockito.MockitoAnnotations;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -263,10 +265,16 @@ public class UserControllerTest {
     @DisplayName("test: save user")
     @Test
     public void testSaveUser() throws Exception {
+        // Create a UserDto object to be sent as JSON
+        UserDto userDto = new UserDto();
+        userDto.setEmail(mockUser1.getEmail());
+        userDto.setName(mockUser1.getName());
 
-        // Mock request parameters
-        Mockito.when(request.getParameter("email")).thenReturn(mockUser1.getEmail());
-        Mockito.when(request.getParameter("name")).thenReturn(mockUser1.getName());
+        // Convert the UserDto object to JSON
+        String jsonUser = objectMapper.writeValueAsString(userDto);
+
+        // Mock the request reader to return the JSON data
+        Mockito.when(request.getReader()).thenReturn(new BufferedReader(new StringReader(jsonUser)));
 
         // Mock the service call
         Mockito.when(userService.saveUser(any(UserDto.class))).thenReturn(true);
@@ -291,15 +299,22 @@ public class UserControllerTest {
 
         // Ensure all data is written to the stringWriter
         writer.flush();
-        assertEquals("User saved successfully", stringWriter.toString().trim());
+        assertEquals("{\"message\": \"User saved successfully\"}", stringWriter.toString().trim());
     }
 
     @DisplayName("test: save user fails")
     @Test
     public void testSaveUserFails() throws Exception {
-        // Mock request parameters
-        Mockito.when(request.getParameter("email")).thenReturn(mockUser1.getEmail());
-        Mockito.when(request.getParameter("name")).thenReturn(mockUser1.getName());
+        // Create a UserDto object to be sent as JSON
+        UserDto userDto = new UserDto();
+        userDto.setEmail(mockUser1.getEmail());
+        userDto.setName(mockUser1.getName());
+
+        // Convert the UserDto object to JSON
+        String jsonUser = objectMapper.writeValueAsString(userDto);
+
+        // Mock the request reader to return the JSON data
+        Mockito.when(request.getReader()).thenReturn(new BufferedReader(new StringReader(jsonUser)));
 
         // Mock the service call to return false (simulate saving failure)
         Mockito.when(userService.saveUser(any(UserDto.class))).thenReturn(false);
@@ -318,15 +333,22 @@ public class UserControllerTest {
 
         // Ensure all data is written to the stringWriter
         writer.flush();
-        assertEquals("Failed to save user", stringWriter.toString().trim());
+        assertEquals("{\"message\": \"Failed to save user\"}", stringWriter.toString().trim());
     }
 
     @DisplayName("test: save user with invalid input")
     @Test
     public void testSaveUserInvalidInput() throws Exception {
-        // Mock request parameters with missing email and name
-        Mockito.when(request.getParameter("email")).thenReturn(null);
-        Mockito.when(request.getParameter("name")).thenReturn(null);
+        // Create a UserDto object with missing email and name
+        UserDto userDto = new UserDto();
+        userDto.setEmail(null);
+        userDto.setName(null);
+
+        // Convert the UserDto object to JSON
+        String jsonUser = objectMapper.writeValueAsString(userDto);
+
+        // Mock the request reader to return the JSON data
+        Mockito.when(request.getReader()).thenReturn(new BufferedReader(new StringReader(jsonUser)));
 
         // Prepare the response writer
         StringWriter stringWriter = new StringWriter();
@@ -342,15 +364,22 @@ public class UserControllerTest {
         // Verify the response status and message
         Mockito.verify(response, Mockito.times(1)).setStatus(HttpServletResponse.SC_BAD_REQUEST);
         writer.flush();
-        assertEquals("Invalid input", stringWriter.toString().trim());
+        assertEquals("{\"message\": \"Invalid input: email and name are required\"}", stringWriter.toString().trim());
     }
 
     @DisplayName("test: exception during user saving")
     @Test
     public void testSaveUserThrowsException() throws Exception {
-        // Mock request parameters
-        Mockito.when(request.getParameter("email")).thenReturn(mockUser1.getEmail());
-        Mockito.when(request.getParameter("name")).thenReturn(mockUser1.getName());
+        // Create a UserDto object to be sent as JSON
+        UserDto userDto = new UserDto();
+        userDto.setEmail(mockUser1.getEmail());
+        userDto.setName(mockUser1.getName());
+
+        // Convert the UserDto object to JSON
+        String jsonUser = objectMapper.writeValueAsString(userDto);
+
+        // Mock the request reader to return the JSON data
+        Mockito.when(request.getReader()).thenReturn(new BufferedReader(new StringReader(jsonUser)));
 
         // Mock the service call to throw a SQLException
         Mockito.when(userService.saveUser(any(UserDto.class))).thenThrow(new SQLException("Database error"));
@@ -361,14 +390,15 @@ public class UserControllerTest {
         Mockito.when(response.getWriter()).thenReturn(writer);
 
         // Call the doPost method
-        Exception exception = Assertions.assertThrows(RuntimeException.class, () -> userController.doPost(request, response));
+        userController.doPost(request, response);
 
-        // Verify the exception message
-        assertEquals("java.lang.RuntimeException: java.sql.SQLException: Database error", exception.toString());
-
-        // Verify that the service was called once
+        // Verify the service call and the response status
         Mockito.verify(userService, Mockito.times(1)).saveUser(any(UserDto.class));
-    }
+        Mockito.verify(response, Mockito.times(1)).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
+        // Ensure all data is written to the stringWriter
+        writer.flush();
+        assertEquals("{\"message\": \"Error saving user: Database error\"}", stringWriter.toString().trim());
+    }
 
 }
