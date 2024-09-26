@@ -133,7 +133,7 @@ public class UserController extends HttpServlet {
         // Validate the input
         if (userDto.getEmail() == null || userDto.getName() == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("{\"message\": \"Email and name are required\"}");
+            response.getWriter().write("{\"message\": \"Invalid input: email and name are required\"}");
             return;
         }
 
