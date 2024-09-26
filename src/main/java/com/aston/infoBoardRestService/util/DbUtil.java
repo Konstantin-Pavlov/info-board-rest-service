@@ -34,9 +34,9 @@ public final class DbUtil {
         }
     }
 
-    private static final String URL = properties.getProperty("db.url");
-    private static final String USER = properties.getProperty("db.username");
-    private static final String PASSWORD = properties.getProperty("db.password");
+    private static String URL = properties.getProperty("db.url");
+    private static String USER = properties.getProperty("db.username");
+    private static String PASSWORD = properties.getProperty("db.password");
     private static final String DRIVER = properties.getProperty("db.driver");
     private static final String LIQUIBASE_CHANGELOG_PATH = properties.getProperty("liquibase.change_log_file_path");
 
@@ -92,6 +92,19 @@ public final class DbUtil {
      */
     public static String getChangelogPath() {
         return LIQUIBASE_CHANGELOG_PATH;
+    }
+
+    /**
+     * Sets the database connection details dynamically when testing dao layer with test containers.
+     *
+     * @param url      the database URL
+     * @param user     the database username
+     * @param password the database password
+     */
+    public static void setConnectionDetails(String url, String user, String password) {
+        URL = url;
+        USER = user;
+        PASSWORD = password;
     }
 
 }
