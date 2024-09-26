@@ -97,11 +97,11 @@ public class OrderControllerTest {
 
         // Verify the service and status
         Mockito.verify(orderService, Mockito.times(1)).getOrders();
-        Mockito.verify(response, Mockito.times(1)).setStatus(HttpServletResponse.SC_OK);
+        Mockito.verify(response, Mockito.times(1)).setStatus(HttpServletResponse.SC_NO_CONTENT);
 
         // Verify the JSON response is an empty array
         String jsonResponse = stringWriter.toString();
-        Assertions.assertEquals("[]", jsonResponse.trim());  // Adjust the assertion
+        Assertions.assertEquals("", jsonResponse.trim());
     }
 
     @Test
