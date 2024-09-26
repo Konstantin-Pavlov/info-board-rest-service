@@ -4,7 +4,7 @@ import com.aston.infoBoardRestService.dao.MessageDao;
 import com.aston.infoBoardRestService.dao.UserDao;
 import com.aston.infoBoardRestService.entity.Message;
 import com.aston.infoBoardRestService.entity.User;
-import com.aston.infoBoardRestService.util.TestUtil;
+import testutil.TestUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;

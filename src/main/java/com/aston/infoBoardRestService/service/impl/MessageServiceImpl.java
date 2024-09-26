@@ -56,9 +56,9 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void updateMessage(MessageDto messageDTO) throws SQLException {
+    public boolean updateMessage(MessageDto messageDTO) throws SQLException {
         Message message = messageMapper.toMessage(messageDTO);
-        messageDao.updateMessage(message);
+        return messageDao.updateMessage(message);
     }
 
     @Override

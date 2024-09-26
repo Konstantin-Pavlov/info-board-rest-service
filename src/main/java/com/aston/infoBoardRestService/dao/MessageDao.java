@@ -73,6 +73,11 @@ public class MessageDao {
                 messages.add(message);
             }
         }
+        if (messages.isEmpty()) {
+            logger.warning("No messages found");
+        } else {
+            logger.info(String.format("%d messages found", messages.size()));
+        }
         return messages;
     }
 
@@ -120,24 +125,35 @@ public class MessageDao {
                 messages.add(message);
             }
         }
+        if (messages.isEmpty()) {
+            logger.warning(String.format("Messages with author email %s not found", email));
+        } else {
+            logger.info(String.format("%d messages with author email %s found", messages.size(), email));
+        }
         return messages;
     }
 
-    public void updateMessage(Message message) throws SQLException {
+    public boolean updateMessage(Message message) throws SQLException {
         String query = "UPDATE messages SET content = ?, author_id = ?, timestamp = ? WHERE id = ?";
+        if (getMessage(message.getId()) == null) {
+            logger.warning(String.format("Message with id %s not found", message.getId()));
+            return false;
+        }
         try (Connection connection = DbUtil.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, message.getContent());
-            statement.setString(2, message.getContent());
+            statement.setLong(2, message.getAuthorId());
             statement.setObject(3, message.getTimestamp());
             statement.setLong(4, message.getId());
             statement.executeUpdate();
         }
+        logger.info(String.format("Message with id %s has been updated", message.getId()));
+        return true;
     }
 
     public boolean deleteMessage(Long id) throws SQLException {
         String query = "DELETE FROM messages WHERE id = ?";
-        if(getMessage(id) == null) {
+        if (getMessage(id) == null) {
             logger.warning(String.format("Message with id %s not found", id));
             return false;
         }
@@ -146,6 +162,7 @@ public class MessageDao {
             statement.setLong(1, id);
             statement.executeUpdate();
         }
+        logger.info(String.format("Message with id %s deleted", id));
         return true;
     }
 

@@ -1,4 +1,4 @@
-package com.aston.infoBoardRestService.util;
+package testutil;
 
 import com.aston.infoBoardRestService.entity.Message;
 import com.aston.infoBoardRestService.entity.User;
@@ -17,14 +17,14 @@ public class TestUtil {
     public static User getTestUserWithMessages() {
         User user = new User("Tom", "tom@email.com");
         user.setMessages(new ArrayList<>());
-        Message message1 = new Message(null, "test1", user.getName(), LocalDateTime.now());
-        Message message2 = new Message(null, "test2", user.getName(), LocalDateTime.now());
-        user.getMessages().add(message1);
-        user.getMessages().add(message2);
+
+        user.getMessages().add(getNewMessage(user, "test1"));
+        user.getMessages().add(getNewMessage(user, "test2"));
+
         return user;
     }
 
-    public static Message getNewMessage(User user){
-        return new Message(user.getId(), "test1", user.getName(), LocalDateTime.now());
+    public static Message getNewMessage(User user, String content){
+        return new Message(user.getId(), content, user.getName(), LocalDateTime.now(), user);
     }
 }

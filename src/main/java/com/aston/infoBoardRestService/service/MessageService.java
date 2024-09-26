@@ -16,7 +16,7 @@ public interface MessageService {
 
     List<MessageDto> getMessagesByAuthorEmail(String email) throws SQLException;
 
-    void updateMessage(MessageDto messageDTO) throws SQLException;
+    boolean updateMessage(MessageDto messageDTO) throws SQLException;
 
     boolean deleteMessage(Long id) throws SQLException;
 }

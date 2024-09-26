@@ -26,6 +26,14 @@ public class Message {
         this.timestamp = timestamp;
     }
 
+    public Message(Long authorId, String content, String authorName, LocalDateTime timestamp, User user) {
+        this.authorId = authorId;
+        this.content = content;
+        this.authorName = authorName;
+        this.timestamp = timestamp;
+        this.user = user;
+    }
+
     public Message(Long id, Long authorId, String content, String authorName, LocalDateTime timestamp, User user) {
         this.id = id;
         this.authorId = authorId;
