@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class MessageDao {
-    Logger logger = Logger.getLogger(UserDao.class.getName());
+    private static final Logger logger = Logger.getLogger(UserDao.class.getName());
 
 
     public boolean saveMessage(Message message) throws SQLException {

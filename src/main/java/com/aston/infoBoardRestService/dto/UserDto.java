@@ -3,6 +3,7 @@ package com.aston.infoBoardRestService.dto;
 import com.aston.infoBoardRestService.entity.Message;
 
 import java.util.List;
+import java.util.Objects;
 
 public class UserDto {
     private Long id;
@@ -40,5 +41,18 @@ public class UserDto {
 
     public void setMessages(List<Message> messages) {
         this.messages = messages;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserDto userDto = (UserDto) o;
+        return Objects.equals(id, userDto.id) && Objects.equals(name, userDto.name) && Objects.equals(email, userDto.email) && Objects.equals(messages, userDto.messages);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, email, messages);
     }
 }

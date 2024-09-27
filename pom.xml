@@ -192,11 +192,19 @@
             <version>1.7.36</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>ch.qos.logback</groupId>-->
-<!--            <artifactId>logback-classic</artifactId>-->
-<!--            <version>1.2.10</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>org.jacoco.agent</artifactId>
+            <version>0.8.12</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <!--        <dependency>-->
+        <!--            <groupId>ch.qos.logback</groupId>-->
+        <!--            <artifactId>logback-classic</artifactId>-->
+        <!--            <version>1.2.10</version>-->
+        <!--        </dependency>-->
 
 
     </dependencies>
@@ -247,7 +255,8 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>process-resources</phase>
+                        <!--                        <phase>process-resources</phase>-->
+                        <phase>none</phase>
                         <goals>
                             <goal>update</goal>
                         </goals>
@@ -295,6 +304,13 @@
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase> <!-- Attach Jacoco to the 'test' phase -->
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
                         <configuration>
                             <includes>
                                 <include>com/aston/infoBoardRestService/dao/**</include>
@@ -305,22 +321,17 @@
                                 <include>com/aston/infoBoardRestService/service/impl/**</include>
                                 <include>com/aston/infoBoardRestService/servlet/api/**</include>
                             </includes>
+                            <!--                            this section doesn't work for some reason -->
                             <excludes>
-                                <exclude>com/aston/infoBoardRestService/servlet/web/**</exclude>
-                                <exclude>com/aston/infoBoardRestService/servlet/servletListener</exclude>
-                                <exclude>com/aston/infoBoardRestService/servlet/util/**</exclude>
+                                <exclude>**/servlet/util/**</exclude>
+                                <exclude>**/servlet/web/**</exclude>
+                                <exclude>**/servlet/servletListener/**</exclude>
                             </excludes>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
                 </executions>
             </plugin>
+
 
         </plugins>
     </build>
