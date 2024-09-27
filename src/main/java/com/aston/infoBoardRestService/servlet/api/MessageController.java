@@ -52,7 +52,7 @@ public class MessageController extends HttpServlet {
                 if (param.contains("@")) {
                     // Assume it's an email
                     List<MessageDto> messages = messageService.getMessagesByAuthorEmail(param);
-                    if (messages != null) {
+                    if (messages != null && !messages.isEmpty()) {
                         resp.setStatus(HttpServletResponse.SC_OK);
                         objectMapper.writeValue(resp.getWriter(), messages);
                     } else {
@@ -63,7 +63,7 @@ public class MessageController extends HttpServlet {
                     Long authorId = Long.parseLong(param.split("/")[1]);
                     // Assume it's an user id
                     List<MessageDto> messages = messageService.getMessagesByAuthorId(authorId);
-                    if (messages != null) {
+                    if (messages != null && !messages.isEmpty()) {
                         resp.setStatus(HttpServletResponse.SC_OK);
                         objectMapper.writeValue(resp.getWriter(), messages);
                     } else {

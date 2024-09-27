@@ -139,6 +139,27 @@ public class MessageControllerTest {
         assertEquals(objectMapper.writeValueAsString(messageMapper.toMessageDto(message1)), stringWriter.toString().trim());
     }
 
+    @DisplayName("Test: get all messages by author ID")
+    @Test
+    public void testGetMessagesByAuthorId() throws Exception {
+        Mockito.when(messageService.getMessagesByAuthorId(1L)).thenReturn(messageDtos);
+        Mockito.when(request.getPathInfo()).thenReturn("/get-by-author-id/1");
+
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        Mockito.when(response.getWriter()).thenReturn(printWriter);
+
+        messageController.doGet(request, response);
+
+        verify(messageService, Mockito.times(1)).getMessagesByAuthorId(1L);
+        verify(response).setStatus(HttpServletResponse.SC_OK);
+
+        String jsonResponse = stringWriter.toString();
+        Assertions.assertTrue(jsonResponse.contains("mock1"));
+        Assertions.assertTrue(jsonResponse.contains("mock2"));
+        Assertions.assertEquals(objectMapper.writeValueAsString(messageDtos), stringWriter.toString().trim());
+    }
+
     @DisplayName("Test: Handle SQLException during message retrieval")
     @Test
     public void testSQLExceptionHandling() throws Exception {
@@ -171,6 +192,40 @@ public class MessageControllerTest {
         verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);
         printWriter.flush();
         Assertions.assertTrue(stringWriter.toString().contains("message with id 99 not found"));
+    }
+
+    @DisplayName("Test: get all messages by author ID not found")
+    @Test
+    public void testGetMessagesByAuthorIdNotFound() throws Exception {
+        Mockito.when(messageService.getMessagesByAuthorId(99L)).thenReturn(new ArrayList<>());
+        Mockito.when(request.getPathInfo()).thenReturn("/get-by-author-id/99");
+
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        Mockito.when(response.getWriter()).thenReturn(printWriter);
+
+        messageController.doGet(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);
+        printWriter.flush();
+        Assertions.assertTrue(stringWriter.toString().contains("messages for user with id 99 not found"));
+    }
+
+    @DisplayName("Test: get all messages by author email not found")
+    @Test
+    public void testGetMessagesByAuthorEmailNotFound() throws Exception {
+        Mockito.when(messageService.getMessagesByAuthorEmail("notfound@email")).thenReturn(new ArrayList<>());
+        Mockito.when(request.getPathInfo()).thenReturn("/notfound@email");
+
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        Mockito.when(response.getWriter()).thenReturn(printWriter);
+
+        messageController.doGet(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);
+        printWriter.flush();
+        Assertions.assertTrue(stringWriter.toString().contains("messages for user with email notfound@email not found"));
     }
 
     @DisplayName("Test: Handle non-numeric ID in path when trying to get message by ID")
@@ -224,6 +279,25 @@ public class MessageControllerTest {
         Mockito.verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
         printWriter.flush();
         Assertions.assertTrue(stringWriter.toString().contains("Invalid ID format"));
+    }
+
+    @DisplayName("Test: Handle unexpected exceptions")
+    @Test
+    public void testHandleUnexpectedExceptions() throws Exception {
+        // Use a valid path that would normally retrieve all messages
+        Mockito.when(request.getPathInfo()).thenReturn(null);
+        // Simulate an unexpected exception in the service layer
+        Mockito.when(messageService.getAllMessages()).thenThrow(new RuntimeException("Unexpected error"));
+
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        Mockito.when(response.getWriter()).thenReturn(printWriter);
+
+        messageController.doGet(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        printWriter.flush();
+        Assertions.assertTrue(stringWriter.toString().contains("Unexpected error"));
     }
 
 }
