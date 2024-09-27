@@ -31,7 +31,7 @@
 
     <servlet>
         <servlet-name>FirstServlet</servlet-name>
-        <servlet-class>com.aston.infoBoardRestService.servlet.FirstServlet</servlet-class>
+        <servlet-class>com.aston.infoBoardRestService.servlet.web.FirstServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>FirstServlet</servlet-name>

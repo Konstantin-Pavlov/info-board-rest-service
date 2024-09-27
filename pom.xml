@@ -10,6 +10,7 @@
     <packaging>war</packaging>
 
     <properties>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
@@ -20,6 +21,11 @@
         <mockito.version>5.3.0</mockito.version>
         <allure-junit5.version>2.13.6</allure-junit5.version>
         <testcontainers.version>1.18.0</testcontainers.version>
+
+        <liquibase.url>jdbc:postgresql://localhost:5431/info_board</liquibase.url>
+        <liquibase.username>postgres</liquibase.username>
+        <liquibase.password>postgres</liquibase.password>
+        <liquibase.driver>org.postgresql.Driver</liquibase.driver>
 
     </properties>
 
@@ -86,12 +92,12 @@
             <version>1.5.5.Final</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct-processor</artifactId>
-            <version>1.5.5.Final</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>org.mapstruct</groupId>-->
+        <!--            <artifactId>mapstruct-processor</artifactId>-->
+        <!--            <version>1.5.5.Final</version>-->
+        <!--            <scope>provided</scope>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -177,7 +183,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.11</version>
+            <version>1.4.12</version>
         </dependency>
 
         <dependency>
@@ -186,17 +192,58 @@
             <version>1.7.36</version>
         </dependency>
 
+<!--        <dependency>-->
+<!--            <groupId>ch.qos.logback</groupId>-->
+<!--            <artifactId>logback-classic</artifactId>-->
+<!--            <version>1.2.10</version>-->
+<!--        </dependency>-->
+
+
     </dependencies>
 
     <build>
         <plugins>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>16</source>
+                    <target>16</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>1.5.5.Final</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <!--            <plugin>-->
+            <!--                <groupId>org.mapstruct</groupId>-->
+            <!--                <artifactId>mapstruct-processor</artifactId>-->
+            <!--                <version>1.5.5.Final</version>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <goals>-->
+            <!--                            <goal>generate</goal>-->
+            <!--                        </goals>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--            </plugin>-->
+
+            <plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>4.9.1</version>
                 <configuration>
-                    <propertyFile>src/main/resources/liquibase.properties</propertyFile>
+                    <changeLogFile>db/changelog/master.yaml</changeLogFile>
+                    <url>${liquibase.url}</url>
+                    <username>${liquibase.username}</username>
+                    <password>${liquibase.password}</password>
+                    <driver>${liquibase.driver}</driver>
                 </configuration>
                 <executions>
                     <execution>
@@ -209,30 +256,70 @@
             </plugin>
 
             <plugin>
-                <groupId>org.mapstruct</groupId>
-                <artifactId>mapstruct-processor</artifactId>
-                <version>1.5.5.Final</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.3.2</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
+                        <id>copy-resources</id>
+                        <phase>process-resources</phase>
                         <goals>
-                            <goal>generate</goal>
+                            <goal>copy-resources</goal>
                         </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/filtered-resources</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.3.2</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>16</source>
-                    <target>16</target>
-                </configuration>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>com/aston/infoBoardRestService/dao/**</include>
+                                <include>com/aston/infoBoardRestService/dto/**</include>
+                                <include>com/aston/infoBoardRestService/entity/**</include>
+                                <include>com/aston/infoBoardRestService/exception/**</include>
+                                <include>com/aston/infoBoardRestService/mapper/**</include>
+                                <include>com/aston/infoBoardRestService/service/impl/**</include>
+                                <include>com/aston/infoBoardRestService/servlet/api/**</include>
+                            </includes>
+                            <excludes>
+                                <exclude>com/aston/infoBoardRestService/servlet/web/**</exclude>
+                                <exclude>com/aston/infoBoardRestService/servlet/servletListener</exclude>
+                                <exclude>com/aston/infoBoardRestService/servlet/util/**</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
