@@ -48,6 +48,8 @@ public class OrderController extends HttpServlet {
             }
         } catch (SQLException e) {
             logger.severe(String.format("SQL Exception: %s", e.getMessage()));
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"error\": \"A database error occurred\"}");
             throw new RuntimeException(e);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

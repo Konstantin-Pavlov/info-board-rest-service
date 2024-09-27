@@ -6,6 +6,7 @@ import com.aston.infoBoardRestService.servlet.api.OrderController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -64,6 +65,7 @@ public class OrderControllerTest {
         Mockito.when(response.getWriter()).thenReturn(writer);
     }
 
+    @DisplayName("Test: get all orders")
     @Test
     public void getAllOrders() throws Exception {
         Mockito.when(orderService.getOrders()).thenReturn(mockOrders);
@@ -82,6 +84,7 @@ public class OrderControllerTest {
         Assertions.assertTrue(jsonResponse.contains("Order 2"));
     }
 
+    @DisplayName("Test: get all orders as empty list")
     @Test
     public void getAllOrders_EmptyList() throws SQLException, IOException, ServletException {
         // Mock an empty list of orders
@@ -104,6 +107,7 @@ public class OrderControllerTest {
         Assertions.assertEquals("", jsonResponse.trim());
     }
 
+    @DisplayName("Test: Handle unexpected exceptions")
     @Test
     public void getAllOrders_Exception() throws Exception {
         Mockito.when(orderService.getOrders()).thenThrow(new RuntimeException("Database error"));
@@ -111,6 +115,7 @@ public class OrderControllerTest {
         Mockito.verify(response, Mockito.times(1)).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 
+    @DisplayName("Test: get all orders with status OK")
     @Test
     public void getAllOrders_StatusOK() throws Exception {
         Mockito.when(orderService.getOrders()).thenReturn(mockOrders);
@@ -118,6 +123,7 @@ public class OrderControllerTest {
         Mockito.verify(response).setStatus(HttpServletResponse.SC_OK);
     }
 
+    @DisplayName("Test: get all orders in JSON format")
     @Test
     public void getAllOrders_JsonFormat() throws Exception {
         Mockito.when(orderService.getOrders()).thenReturn(mockOrders);
@@ -133,11 +139,46 @@ public class OrderControllerTest {
         Assertions.assertTrue(jsonResponse.contains("\"title\":\"Order 1\""));
     }
 
+    @DisplayName("Test: get all orders with null list")
     @Test
     public void getAllOrders_NullList() throws Exception {
         Mockito.when(orderService.getOrders()).thenReturn(null);
         orderController.doGet(request, response);
         Mockito.verify(response).setStatus(HttpServletResponse.SC_NO_CONTENT);
+    }
+
+    @DisplayName("Test: Handle SQLException during order retrieval")
+    @Test
+    public void getAllOrders_SQLException() throws Exception {
+        Mockito.when(orderService.getOrders()).thenThrow(new SQLException("Database error"));
+
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        Mockito.when(response.getWriter()).thenReturn(printWriter);
+
+        Assertions.assertThrows(RuntimeException.class, () -> {
+            orderController.doGet(request, response);
+        });
+
+        Mockito.verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        printWriter.flush();
+        Assertions.assertTrue(stringWriter.toString().contains("{\"error\": \"A database error occurred\"}"));
+    }
+
+    @DisplayName("Test: Handle RuntimeException during order retrieval")
+    @Test
+    public void getAllOrders_RuntimeException() throws Exception {
+        Mockito.when(orderService.getOrders()).thenThrow(new RuntimeException("Generic error"));
+
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        Mockito.when(response.getWriter()).thenReturn(printWriter);
+
+        orderController.doGet(request, response);
+
+        Mockito.verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        printWriter.flush();
+        Assertions.assertTrue(stringWriter.toString().contains("{\"error\": \"An error occurred\"}"));
     }
 
 }
