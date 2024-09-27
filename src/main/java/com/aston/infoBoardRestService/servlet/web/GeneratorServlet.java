@@ -1,7 +1,6 @@
-package com.aston.infoBoardRestService.servlet;
+package com.aston.infoBoardRestService.servlet.web;
 
 import com.aston.infoBoardRestService.util.MessageSaver;
-import com.aston.infoBoardRestService.util.UserGenerator;
 import com.aston.infoBoardRestService.util.UserSaver;
 
 import javax.servlet.ServletException;
@@ -10,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Random;
 import java.util.logging.Logger;

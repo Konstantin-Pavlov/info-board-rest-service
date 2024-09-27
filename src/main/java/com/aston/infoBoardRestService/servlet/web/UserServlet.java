@@ -1,4 +1,4 @@
-package com.aston.infoBoardRestService.servlet;
+package com.aston.infoBoardRestService.servlet.web;
 
 import com.aston.infoBoardRestService.dto.UserDto;
 import com.aston.infoBoardRestService.exception.UserNotFoundException;

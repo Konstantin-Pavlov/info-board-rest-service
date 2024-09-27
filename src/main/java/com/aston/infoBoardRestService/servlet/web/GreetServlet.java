@@ -1,4 +1,4 @@
-package com.aston.infoBoardRestService.servlet;
+package com.aston.infoBoardRestService.servlet.web;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

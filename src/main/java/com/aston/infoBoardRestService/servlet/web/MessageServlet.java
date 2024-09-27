@@ -1,7 +1,6 @@
-package com.aston.infoBoardRestService.servlet;
+package com.aston.infoBoardRestService.servlet.web;
 
 import com.aston.infoBoardRestService.dto.MessageDto;
-import com.aston.infoBoardRestService.dto.UserDto;
 import com.aston.infoBoardRestService.service.MessageService;
 import com.aston.infoBoardRestService.service.impl.MessageServiceImpl;
 import com.aston.infoBoardRestService.util.DateTimeUtil;
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @WebServlet(name = "message servlet", value = "/messages")
