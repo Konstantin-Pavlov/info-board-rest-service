@@ -133,7 +133,6 @@ public class UserControllerTest {
         assertEquals("User with email nonexistent@example.com not found", stringWriter.toString().trim());
     }
 
-
     @DisplayName("test: get user by id")
     @Test
     public void testGetUserById() throws Exception {
@@ -260,7 +259,6 @@ public class UserControllerTest {
         writer.flush();
         assertEquals("{\"message\": \"Error retrieving users: Database error\"}", stringWriter.toString().trim());
     }
-
 
     @DisplayName("test: save user")
     @Test

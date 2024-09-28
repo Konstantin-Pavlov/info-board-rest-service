@@ -299,5 +299,4 @@ public class MessageControllerTest {
         printWriter.flush();
         Assertions.assertTrue(stringWriter.toString().contains("Unexpected error"));
     }
-
 }
